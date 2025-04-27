@@ -5,31 +5,29 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 function Page() {
   return (
     <>
-      <div className="flex justify-between mb-10">
-        <h1 className="text-4xl font-bold text-primary">DocPilot</h1>
-
-        <Link href="/create">
-          <Button>Create New Doc</Button>
-        </Link>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <Card>
           <CardHeader>
-            <h2 className="font-bold">Sex Management API</h2>
+            <h2 className="font-bold">Blog API</h2>
           </CardHeader>
 
           <CardContent>
-            <p>Manage user&apos;s sex and sex the cat while sexing the dogs.</p>
+            <p>Fetch blog details</p>
           </CardContent>
 
           <CardFooter>
-            <Button>Read Documentation</Button>
+            <Link href="/test-api">
+              <Button>
+                Read Documentation
+                <ChevronRight />
+              </Button>
+            </Link>
           </CardFooter>
         </Card>
       </div>
