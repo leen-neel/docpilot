@@ -5,10 +5,13 @@ import {
   CardFooter,
   CardHeader,
 } from "@/components/ui/card";
+import { getDocs } from "@/lib/actions/db.actions";
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 
-function Page() {
+async function Page() {
+  const docs = await getDocs();
+
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
@@ -31,6 +34,8 @@ function Page() {
           </CardFooter>
         </Card>
       </div>
+
+      <pre>{JSON.stringify(docs?.sdkWrappers, null, 2)}</pre>
     </>
   );
 }

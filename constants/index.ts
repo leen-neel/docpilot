@@ -1,4 +1,5 @@
 import { dummyDoc } from "./api_data";
+import { sdkLines } from "./sdk_data";
 import { z } from "zod";
 
 // Schema for the endpoints
@@ -31,7 +32,7 @@ export const EndpointSchema = z.object({
     })
   ),
 
-  requestBody: z
+  request: z
     .object({
       required: z.boolean(),
       contentType: z.string(),
@@ -46,18 +47,6 @@ export const EndpointSchema = z.object({
       example: z.any().optional(),
     })
   ),
-
-  codeSamples: z.object({
-    curl: z.string(),
-    nodejs: z.string(),
-  }),
-
-  mockServer: z.object({
-    url: z.string(),
-    exampleResponse: z.any(),
-  }),
-
-  sdkAvailable: z.array(z.string()),
 });
 
 // Main schema for the full document
@@ -74,4 +63,4 @@ export const DummyDocSchema = z.object({
   endpoints: z.array(EndpointSchema),
 });
 
-export { dummyDoc };
+export { dummyDoc, sdkLines };
