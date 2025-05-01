@@ -15,27 +15,27 @@ async function Page() {
   return (
     <>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-        <Card>
-          <CardHeader>
-            <h2 className="font-bold">Blog API</h2>
-          </CardHeader>
+        {docs.map((doc) => (
+          <Card key={doc.id}>
+            <CardHeader>
+              <h2 className="font-bold"> {doc.name} </h2>
+            </CardHeader>
 
-          <CardContent>
-            <p>Fetch blog details</p>
-          </CardContent>
+            <CardContent>
+              <p> {doc.description} </p>
+            </CardContent>
 
-          <CardFooter>
-            <Link href="/test-api">
-              <Button>
-                Read Documentation
-                <ChevronRight />
-              </Button>
-            </Link>
-          </CardFooter>
-        </Card>
+            <CardFooter>
+              <Link href={doc.id}>
+                <Button>
+                  Read Documentation
+                  <ChevronRight />
+                </Button>
+              </Link>
+            </CardFooter>
+          </Card>
+        ))}
       </div>
-
-      <pre>{JSON.stringify(docs?.sdkWrappers, null, 2)}</pre>
     </>
   );
 }

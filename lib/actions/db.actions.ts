@@ -2,6 +2,7 @@ import * as schema from "@/drizzle/schema";
 
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
+import { eq } from "drizzle-orm";
 
 const pg = neon(process.env.DATABASE_URL!);
 const db = drizzle({ client: pg, schema: schema });
@@ -18,7 +19,13 @@ const {
 } = schema;
 
 export const getDocs = async () => {
-  const docs = await db.query.apiDocs.findFirst({
+  const docs = await db.query.apiDocs.findMany();
+
+  return docs;
+};
+
+export const getDocById = async (id: string) => {
+  const doc = await db.query.apiDocs.findFirst({
     with: {
       servers: true,
       endpoints: {
@@ -31,9 +38,10 @@ export const getDocs = async () => {
       },
       sdkWrappers: true,
     },
+    where: eq(apiDocs.id, id),
   });
 
-  return docs;
+  return doc;
 };
 
 export const seed = async () => {
@@ -42,6 +50,7 @@ export const seed = async () => {
     name: "Weather Forecast API",
     description: "Provides real-time and forecasted weather data.",
     baseURL: "https://api.weatherpro.com/v1",
+    userId: "user_2wGJLNIxBmL5M3tCQG5TbbTwdx1",
   });
 
   await db.insert(servers).values([

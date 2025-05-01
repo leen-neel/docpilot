@@ -15,6 +15,7 @@ export const apiDocs = pgTable("apiDocs", {
   name: varchar("name", { length: 255 }).notNull(),
   description: varchar("description", { length: 355 }).notNull(),
   baseURL: varchar("baseURL", { length: 255 }).notNull(),
+  userId: varchar("userId", { length: 255 }).notNull(),
 });
 
 export const servers = pgTable("servers", {

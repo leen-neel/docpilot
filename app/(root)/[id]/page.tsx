@@ -1,3 +1,6 @@
+"use client";
+
+import { useDoc } from "@/app/context/DocContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -13,14 +16,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { getDocs } from "@/lib/actions/db.actions";
 import { Check, Code, Menu, Server } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 
-async function Page() {
-  const apiDoc = await getDocs();
+function Page() {
+  const apiDoc = useDoc();
 
-  // const [selectedServer, setSelectedServer] = useState(apiDoc.servers[0].url);
+  const [selectedServer, setSelectedServer] = useState(apiDoc?.servers[0].url);
 
   return (
     <>
@@ -38,13 +41,15 @@ async function Page() {
               <SheetDescription>{apiDoc?.description}</SheetDescription>
             </SheetHeader>
 
-            <Button variant="ghost" className="justify-start">
-              <Server />
-              Endpoints
-            </Button>
+            <Link href={`/${apiDoc?.id}`} className="w-full">
+              <Button variant="ghost" className="w-full justify-start">
+                <Server />
+                Endpoints
+              </Button>
+            </Link>
 
-            <Link href={`/${apiDoc?.id}/sdks`}>
-              <Button variant="ghost" className="justify-start">
+            <Link href={`/${apiDoc?.id}/sdks`} className="w-full">
+              <Button variant="ghost" className="w-full justify-start">
                 <Code />
                 SDKs
               </Button>
@@ -62,17 +67,17 @@ async function Page() {
           </div>
 
           {/* Server Selector */}
-          {/* <div className="mb-5 md:mt-5">
+          <div className="mb-5 md:mt-5">
             <Popover>
               <PopoverTrigger className="border p-2 rounded-md">
                 Server: {selectedServer}
               </PopoverTrigger>
-              <PopoverContent className="w-[200px]">
-                {apiDoc.servers.map((server) => (
+              <PopoverContent className="max-w-xl">
+                {apiDoc?.servers.map((server) => (
                   <Button
                     key={server.url}
                     variant="ghost"
-                    className="w-full justify-start"
+                    className=" justify-start"
                     onClick={() => setSelectedServer(server.url)}
                   >
                     {selectedServer === server.url && (
@@ -83,7 +88,7 @@ async function Page() {
                 ))}
               </PopoverContent>
             </Popover>
-          </div> */}
+          </div>
         </div>
 
         <div className="flex flex-col gap-16 mt-10">
@@ -113,11 +118,11 @@ async function Page() {
                 </div>
               )}
 
-              {endpoint.queryParams.length > 0 && (
+              {endpoint.queryParams!.length > 0 && (
                 <div className="mb-5">
                   <p className="font-bold mb-2">Query Parameters:</p>
                   <ul className="list-disc list-inside">
-                    {endpoint.queryParams.map((param) => (
+                    {endpoint.queryParams!.map((param) => (
                       <li key={param.name}>
                         <span className="font-mono">{param.name}</span> (
                         {param.type}) {param.required ? "(required)" : ""}
@@ -128,15 +133,15 @@ async function Page() {
                 </div>
               )}
 
-              {endpoint.path.length > 0 && (
+              {endpoint.pathParams!.length > 0 && (
                 <div className="mb-5">
                   <p className="font-bold mb-2">Path Parameters:</p>
                   <ul className="list-disc list-inside">
-                    {endpoint.pathParams.map((param) => (
+                    {endpoint.pathParams!.map((param) => (
                       <li key={param.name}>
                         <span className="font-mono">{param.name}</span> (
                         {param.type}) {param.required ? "(required)" : ""}
-                        <div className="text-gray-600">{param.description}</div>
+                        <div className="text-gray-400">{param.description}</div>
                       </li>
                     ))}
                   </ul>
@@ -153,25 +158,29 @@ async function Page() {
                   </Card>
                 )}
 
-                <Card>
-                  <CardContent className="overflow-auto">
-                    <p className="my-4 font-bold text-2xl">Responses</p>
+                {endpoint.responses!.length > 0 && (
+                  <Card>
+                    <CardContent className="overflow-auto">
+                      <p className="my-4 font-bold text-2xl">Responses</p>
 
-                    {endpoint.responses.map((response) => (
-                      <div key={response.status} className="mb-4">
-                        <p className="font-semibold">
-                          Status: {response.status}
-                        </p>
-                        <p className="text-gray-600">{response.description}</p>
-                        {(response.example as object) && (
-                          <pre className=" p-2 rounded">
-                            {JSON.stringify(response.example, null, 2)}
-                          </pre>
-                        )}
-                      </div>
-                    ))}
-                  </CardContent>
-                </Card>
+                      {endpoint.responses!.map((response) => (
+                        <div key={response.status} className="mb-4">
+                          <p className="font-semibold">
+                            Status: {response.status}
+                          </p>
+                          <p className="text-gray-400">
+                            {response.description}
+                          </p>
+                          {(response.example as object) && (
+                            <pre className=" p-2 rounded">
+                              {JSON.stringify(response.example, null, 2)}
+                            </pre>
+                          )}
+                        </div>
+                      ))}
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           ))}
