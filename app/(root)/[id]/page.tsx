@@ -168,9 +168,13 @@ function Page() {
                             {req.description}
                           </p>
 
-                          <CodeBlock lang="json">
-                            {JSON.stringify(req.example, null, 2)}
-                          </CodeBlock>
+                          {req.example ? (
+                            <CodeBlock lang="json">
+                              {JSON.stringify(req.example, null, 2)}
+                            </CodeBlock>
+                          ) : (
+                            ""
+                          )}
                         </div>
                       ))}
                     </CardContent>
@@ -190,11 +194,14 @@ function Page() {
                           <p className="text-gray-400">
                             {response.description}
                           </p>
-                          {(response.example as object) && (
-                            <CodeBlock lang="json">
-                              {JSON.stringify(response.example, null, 2)}
-                            </CodeBlock>
-                          )}
+
+                          {Object.keys(response.example).length > 0
+                            ? (response.example as object) && (
+                                <CodeBlock lang="json">
+                                  {JSON.stringify(response.example, null, 2)}
+                                </CodeBlock>
+                              )
+                            : ""}
                         </div>
                       ))}
                     </CardContent>

@@ -29,12 +29,11 @@ const HomePage = () => {
     // Get array buffer of the file
     const arrayBuffer = await file.arrayBuffer();
 
-    // TODO: Send it to the API route
     const res = await fetch("/api/parse-pdf", {
       method: "POST",
       body: arrayBuffer,
       headers: {
-        "Content-Type": "application/pdf", // optional, but helpful
+        "Content-Type": "application/pdf",
       },
     });
 
@@ -56,7 +55,6 @@ const HomePage = () => {
 
       toast("Your doc has been created!");
 
-      setloading(false);
       router.push("/");
     } catch {
       toast("Somnething went wrong");

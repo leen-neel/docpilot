@@ -5,9 +5,12 @@ import { NextRequest, NextResponse } from "next/server";
 export async function POST(req: NextRequest) {
   const body = await req.json();
 
-  const generatedDoc = await generateDocs("typescript", body);
+  try {
+    const generatedDoc = await generateDocs("typescript", body.body);
 
-  await addDoc(generatedDoc, body.user);
-
-  return NextResponse.json({ message: "ok" });
+    await addDoc(generatedDoc, body.user);
+    return NextResponse.json({ message: "ok" });
+  } catch (error) {
+    return NextResponse.json({ message: "Error" }, { status: 400 });
+  }
 }

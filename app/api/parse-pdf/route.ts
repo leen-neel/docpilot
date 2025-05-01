@@ -5,7 +5,5 @@ export async function POST(req: NextRequest) {
   const buffer = await req.arrayBuffer(); // Reads raw bytes
   const data = await pdfParse(Buffer.from(buffer));
 
-  console.log(data);
-
   return NextResponse.json({ text: data.text });
 }
