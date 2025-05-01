@@ -4,10 +4,16 @@ import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
 import { useUser } from "@clerk/nextjs";
+import { RefreshCcw } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 const HomePage = () => {
   const [fileContents, setfileContents] = useState("");
+  const [loading, setloading] = useState(false);
+
   const { user } = useUser();
+  const router = useRouter();
 
   const handleFileUpload = async (files: File[]) => {
     const file = files[0];
@@ -37,17 +43,25 @@ const HomePage = () => {
   };
 
   const handleProcess = async () => {
-    const res = await fetch("/api/generate-docs", {
-      method: "POST",
-      body: JSON.stringify({
-        user: user!.id,
-        body: fileContents,
-      }),
-    });
+    setloading(true);
 
-    const json = await res.json();
+    try {
+      await fetch("/api/generate-docs", {
+        method: "POST",
+        body: JSON.stringify({
+          user: user!.id,
+          body: fileContents,
+        }),
+      });
 
-    console.log(json);
+      toast("Your doc has been created!");
+
+      setloading(false);
+      router.push("/");
+    } catch {
+      toast("Somnething went wrong");
+      router.push("/");
+    }
   };
 
   return (
@@ -56,8 +70,10 @@ const HomePage = () => {
       <FileUpload onFileUpload={handleFileUpload} />
 
       {fileContents !== "" && (
-        <Button className="mt-5" onClick={handleProcess}>
-          Process
+        <Button className="mt-5" onClick={handleProcess} disabled={loading}>
+          {loading ? <RefreshCcw className="animate-spin" /> : ""}
+
+          {loading ? "Loading" : "Proceed"}
         </Button>
       )}
     </main>

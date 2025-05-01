@@ -11,6 +11,7 @@ import "../globals.css";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -61,6 +62,8 @@ export default function RootLayout({
             </SignedOut>
           </header>
           <main className="px-10">{children}</main>
+
+          <Toaster />
         </body>
       </html>
     </ClerkProvider>
