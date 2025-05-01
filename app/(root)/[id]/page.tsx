@@ -153,7 +153,16 @@ function Page() {
                   <Card>
                     <CardContent className="overflow-auto">
                       <p className="my-4 font-bold text-2xl">Request Body</p>
-                      <pre>{JSON.stringify(endpoint.request, null, 2)}</pre>
+
+                      {endpoint.request.map((req) => (
+                        <div key={req.id}>
+                          <p className="text-gray-400 mb-3">
+                            {req.description}
+                          </p>
+
+                          <pre>{JSON.stringify(req.example, null, 2)}</pre>
+                        </div>
+                      ))}
                     </CardContent>
                   </Card>
                 )}

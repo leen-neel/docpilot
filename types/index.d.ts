@@ -68,7 +68,13 @@ type SdkWrapper = {
   apiId: string;
   language: string;
   code: string[];
-  createdAt: Date | null;
+};
+
+type FAQs = {
+  id: string;
+  apiId: string;
+  question: string;
+  answer: string;
 };
 
 // RELATIONSHIP TYPES
@@ -84,6 +90,7 @@ type ApiDocWithRelations = ApiDoc & {
   servers: Server[];
   endpoints: EndpointWithRelations[];
   sdkWrappers: SdkWrapper[];
+  faqs: FAQs[];
 };
 
 type ServerWithRelations = Server & {
@@ -91,6 +98,10 @@ type ServerWithRelations = Server & {
 };
 
 type SdkWrapperWithRelations = SdkWrapper & {
+  api: ApiDoc;
+};
+
+type FAQRelations = FAQs & {
   api: ApiDoc;
 };
 

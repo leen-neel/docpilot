@@ -13,6 +13,7 @@ const {
   endpoints,
   queryParams,
   pathParams,
+  faqs,
   responses,
   requests,
   sdkWrappers,
@@ -37,6 +38,7 @@ export const getDocById = async (id: string) => {
         },
       },
       sdkWrappers: true,
+      faqs: true,
     },
     where: eq(apiDocs.id, id),
   });
@@ -145,4 +147,21 @@ export const seed = async () => {
   ]);
 
   console.log("✅ SEED DATA INSERTED");
+};
+
+export const faqSeed = async () => {
+  await db.insert(faqs).values([
+    {
+      apiId: "11111111-1111-1111-1111-111111111111",
+      question: "Question 1",
+      answer: "Answer 1",
+    },
+    {
+      apiId: "11111111-1111-1111-1111-111111111111",
+      question: "Question 2",
+      answer: "Answer 2",
+    },
+  ]);
+
+  console.log("SEED DATA SEEDED");
 };

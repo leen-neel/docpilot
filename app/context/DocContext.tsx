@@ -1,4 +1,3 @@
-// app/context/UserContext.tsx
 "use client";
 
 import { ApiDocWithRelations } from "@/types";

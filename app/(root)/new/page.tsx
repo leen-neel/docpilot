@@ -3,9 +3,11 @@
 import FileUpload from "@/components/FileUpload";
 import { Button } from "@/components/ui/button";
 import { useState } from "react";
+import { useUser } from "@clerk/nextjs";
 
 const HomePage = () => {
   const [fileContents, setfileContents] = useState("");
+  const { user } = useUser();
 
   const handleFileUpload = async (files: File[]) => {
     const file = files[0];
@@ -34,12 +36,30 @@ const HomePage = () => {
     setfileContents(json.text);
   };
 
+  const handleProcess = async () => {
+    const res = await fetch("/api/generate-docs", {
+      method: "POST",
+      body: JSON.stringify({
+        user: user!.id,
+        body: fileContents,
+      }),
+    });
+
+    const json = await res.json();
+
+    console.log(json);
+  };
+
   return (
     <main className="flex flex-col items-center justify-center h-screen p-8">
       <h1 className="text-3xl font-bold mb-6">Upload Your API Documentation</h1>
       <FileUpload onFileUpload={handleFileUpload} />
 
-      {fileContents !== "" && <Button className="mt-5">Process</Button>}
+      {fileContents !== "" && (
+        <Button className="mt-5" onClick={handleProcess}>
+          Process
+        </Button>
+      )}
     </main>
   );
 };

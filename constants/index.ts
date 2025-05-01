@@ -10,27 +10,31 @@ export const EndpointSchema = z.object({
   summary: z.string(),
   description: z.string(),
   tags: z.array(z.string()),
-  security: z.string(),
-  headers: z.record(z.string()),
+  security: z.string().optional(),
+  headers: z.record(z.string()).optional(),
 
-  queryParams: z.array(
-    z.object({
-      name: z.string(),
-      type: z.string(),
-      required: z.boolean(),
-      description: z.string(),
-      default: z.any().optional(),
-    })
-  ),
+  queryParams: z
+    .array(
+      z.object({
+        name: z.string(),
+        type: z.string(),
+        required: z.boolean(),
+        description: z.string(),
+        default: z.any().optional(),
+      })
+    )
+    .optional(),
 
-  pathParams: z.array(
-    z.object({
-      name: z.string(),
-      type: z.string(),
-      required: z.boolean(),
-      description: z.string(),
-    })
-  ),
+  pathParams: z
+    .array(
+      z.object({
+        name: z.string(),
+        type: z.string(),
+        required: z.boolean(),
+        description: z.string(),
+      })
+    )
+    .optional(),
 
   request: z
     .object({
@@ -38,7 +42,7 @@ export const EndpointSchema = z.object({
       contentType: z.string(),
       example: z.any(),
     })
-    .nullable(),
+    .optional(),
 
   responses: z.record(
     z.string(),
@@ -49,8 +53,18 @@ export const EndpointSchema = z.object({
   ),
 });
 
+export const wrapperSchema = z.object({
+  language: z.string(),
+  code: z.string().array(),
+});
+
+export const faqSchema = z.object({
+  question: z.string(),
+  answer: z.string(),
+});
+
 // Main schema for the full document
-export const DummyDocSchema = z.object({
+export const DocSchema = z.object({
   apiName: z.string(),
   version: z.string(),
   description: z.string(),
@@ -61,6 +75,8 @@ export const DummyDocSchema = z.object({
     })
   ),
   endpoints: z.array(EndpointSchema),
+  sdkWrappers: z.array(wrapperSchema),
+  faqs: z.array(faqSchema),
 });
 
 export { dummyDoc, sdkLines };

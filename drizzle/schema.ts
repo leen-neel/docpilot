@@ -90,7 +90,15 @@ export const sdkWrappers = pgTable("sdkWrappers", {
     .notNull(),
   language: text("language").notNull(),
   code: text("code").notNull().array(),
-  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const faqs = pgTable("faqs", {
+  id: uuid("id").primaryKey().defaultRandom().primaryKey(),
+  apiId: uuid("api_id")
+    .references(() => apiDocs.id, { onDelete: "cascade" })
+    .notNull(),
+  question: text("question").notNull(),
+  answer: text("answer").notNull(),
 });
 
 // RELATIONS
@@ -99,6 +107,7 @@ export const apiRelations = relations(apiDocs, ({ many }) => ({
   servers: many(servers),
   endpoints: many(endpoints),
   sdkWrappers: many(sdkWrappers),
+  faqs: many(faqs),
 }));
 
 export const serverRelations = relations(servers, ({ one }) => ({
@@ -122,6 +131,13 @@ export const endpointRelations = relations(endpoints, ({ one, many }) => ({
 export const sdkWrapperRelations = relations(sdkWrappers, ({ one }) => ({
   api: one(apiDocs, {
     fields: [sdkWrappers.apiId],
+    references: [apiDocs.id],
+  }),
+}));
+
+export const faqRelations = relations(faqs, ({ one }) => ({
+  api: one(apiDocs, {
+    fields: [faqs.apiId],
     references: [apiDocs.id],
   }),
 }));
