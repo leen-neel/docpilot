@@ -37,20 +37,23 @@ export const EndpointSchema = z.object({
     .optional(),
 
   request: z
-    .object({
-      required: z.boolean(),
-      contentType: z.string(),
-      example: z.any(),
-    })
+    .array(
+      z.object({
+        description: z.string(),
+        example: z.any(),
+      })
+    )
     .optional(),
 
-  responses: z.record(
-    z.string(),
-    z.object({
-      description: z.string(),
-      example: z.any().optional(),
-    })
-  ),
+  responses: z
+    .array(
+      z.object({
+        example: z.any(),
+        description: z.string(),
+        status: z.number(),
+      })
+    )
+    .optional(),
 });
 
 export const wrapperSchema = z.object({
@@ -65,9 +68,10 @@ export const faqSchema = z.object({
 
 // Main schema for the full document
 export const DocSchema = z.object({
-  apiName: z.string(),
+  name: z.string(),
   version: z.string(),
   description: z.string(),
+  baseURL: z.string(),
   servers: z.array(
     z.object({
       url: z.string(),

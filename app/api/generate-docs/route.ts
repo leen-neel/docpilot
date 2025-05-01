@@ -1,3 +1,4 @@
+import { addDoc } from "@/lib/actions/db.actions";
 import { generateDocs } from "@/lib/actions/general.actions";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -6,7 +7,7 @@ export async function POST(req: NextRequest) {
 
   const generatedDoc = await generateDocs("typescript", body);
 
-  console.log(generatedDoc);
+  await addDoc(generatedDoc, body.user);
 
   return NextResponse.json({ message: "ok" });
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useDoc } from "@/app/context/DocContext";
+import CodeBlock from "@/components/CodeBlock";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -16,7 +17,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Check, Code, Menu, Server } from "lucide-react";
+import { Check, Code, Menu, MessageCircleQuestion, Server } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -52,6 +53,13 @@ function Page() {
               <Button variant="ghost" className="w-full justify-start">
                 <Code />
                 SDKs
+              </Button>
+            </Link>
+
+            <Link href={`/${apiDoc?.id}/faqs`} className="w-full">
+              <Button variant="ghost" className="w-full justify-start">
+                <MessageCircleQuestion />
+                FAQs
               </Button>
             </Link>
           </SheetContent>
@@ -149,18 +157,20 @@ function Page() {
               )}
 
               <div className="grid gap-4 grid-cols-1 md:grid-cols-2 mt-5">
-                {endpoint.request && (
+                {endpoint.request!.length > 0 && (
                   <Card>
                     <CardContent className="overflow-auto">
                       <p className="my-4 font-bold text-2xl">Request Body</p>
 
-                      {endpoint.request.map((req) => (
+                      {endpoint.request!.map((req) => (
                         <div key={req.id}>
                           <p className="text-gray-400 mb-3">
                             {req.description}
                           </p>
 
-                          <pre>{JSON.stringify(req.example, null, 2)}</pre>
+                          <CodeBlock lang="json">
+                            {JSON.stringify(req.example, null, 2)}
+                          </CodeBlock>
                         </div>
                       ))}
                     </CardContent>
@@ -181,9 +191,9 @@ function Page() {
                             {response.description}
                           </p>
                           {(response.example as object) && (
-                            <pre className=" p-2 rounded">
+                            <CodeBlock lang="json">
                               {JSON.stringify(response.example, null, 2)}
-                            </pre>
+                            </CodeBlock>
                           )}
                         </div>
                       ))}

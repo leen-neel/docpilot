@@ -3,6 +3,7 @@ import * as schema from "@/drizzle/schema";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { eq } from "drizzle-orm";
+import { ApiDocWithRelations } from "@/types";
 
 const pg = neon(process.env.DATABASE_URL!);
 const db = drizzle({ client: pg, schema: schema });
@@ -44,6 +45,117 @@ export const getDocById = async (id: string) => {
   });
 
   return doc;
+};
+
+export const addDoc = async (doc: ApiDocWithRelations, userId: string) => {
+  const apiDoc = await db
+    .insert(apiDocs)
+    .values({
+      name: doc.name,
+      baseURL: doc.baseURL,
+      description: doc.description,
+      userId,
+    })
+    .returning({
+      id: apiDocs.id,
+    });
+
+  await db.insert(servers).values(
+    doc.servers.map((server) => ({
+      apiId: apiDoc[0].id,
+      url: server.url,
+      description: server.description,
+    }))
+  );
+
+  for (const endpoint of doc.endpoints) {
+    const endpointEntry = await db
+      .insert(endpoints)
+      .values({
+        apiId: apiDoc[0].id,
+        method: endpoint.method,
+        path: endpoint.path,
+        summary: endpoint.summary,
+        security: endpoint.security,
+        headers: endpoint.headers,
+        description: endpoint.description,
+        tags: endpoint.tags,
+      })
+      .returning({
+        id: endpoints.id,
+      });
+
+    // QUERY PARAMS
+    if (endpoint.queryParams?.length) {
+      await db.insert(queryParams).values(
+        endpoint.queryParams.map((qp) => ({
+          endpointId: endpointEntry[0].id,
+          name: qp.name,
+          type: qp.type,
+          required: qp.required,
+          description: qp.description,
+        }))
+      );
+    }
+
+    // PATH PARAMS
+    if (endpoint.pathParams?.length) {
+      await db.insert(pathParams).values(
+        endpoint.pathParams.map((pp) => ({
+          name: pp.name,
+          type: pp.type,
+          required: pp.required,
+          description: pp.description,
+          endpointId: endpointEntry[0].id,
+        }))
+      );
+    }
+
+    // REQUEST
+    if (endpoint.request) {
+      for (const request of endpoint.request) {
+        await db.insert(requests).values({
+          endpointId: endpointEntry[0].id,
+          description: request.description,
+          example: request.example,
+        });
+      }
+    }
+
+    // RESPONSES
+    if (endpoint.responses) {
+      for (const response of endpoint.responses) {
+        await db.insert(responses).values({
+          endpointId: endpointEntry[0].id,
+          status: response.status.toString(),
+          description: response.description,
+          example: response.example ?? {},
+        });
+      }
+    }
+  }
+
+  if (doc.sdkWrappers?.length > 0) {
+    await db.insert(sdkWrappers).values(
+      doc.sdkWrappers.map((sdk) => ({
+        apiId: apiDoc[0].id,
+        language: sdk.language,
+        code: sdk.code,
+      }))
+    );
+  }
+
+  if (doc.faqs?.length > 0) {
+    await db.insert(faqs).values(
+      doc.faqs.map((faq) => ({
+        apiId: apiDoc[0].id,
+        question: faq.question,
+        answer: faq.answer,
+      }))
+    );
+  }
+
+  return "ok";
 };
 
 export const seed = async () => {
