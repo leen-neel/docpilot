@@ -3,7 +3,8 @@ import * as schema from "@/drizzle/schema";
 import { drizzle } from "drizzle-orm/neon-http";
 import { neon } from "@neondatabase/serverless";
 import { eq } from "drizzle-orm";
-import { ApiDocWithRelations } from "@/types";
+import { DocSchema } from "@/constants";
+import { z } from "zod";
 
 const pg = neon(process.env.DATABASE_URL!);
 const db = drizzle({ client: pg, schema: schema });
@@ -19,6 +20,8 @@ const {
   requests,
   sdkWrappers,
 } = schema;
+
+type APIDoc = z.infer<typeof DocSchema>;
 
 export const getDocs = async () => {
   const docs = await db.query.apiDocs.findMany();
@@ -47,7 +50,7 @@ export const getDocById = async (id: string) => {
   return doc;
 };
 
-export const addDoc = async (doc: ApiDocWithRelations, userId: string) => {
+export const addDoc = async (doc: APIDoc, userId: string) => {
   const apiDoc = await db
     .insert(apiDocs)
     .values({

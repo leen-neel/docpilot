@@ -13,7 +13,7 @@ export function DocProvider({
   value,
   children,
 }: {
-  value: ApiDocWithRelations;
+  value: APIDoc;
   children: React.ReactNode;
 }) {
   return <DocContext.Provider value={value}>{children}</DocContext.Provider>;

@@ -32,9 +32,12 @@ export const generateDocs = async (lang: string, api: unknown) => {
         - Use the given schema
         - The api input is: ${api}
         - In the sdkWrappers field, generate the full sdk wrapper with proper type safety (if applicable) in ${lang}
-        - In the faqs field, generate FAQs related to the API
+        - In the faqs field, generate 5 FAQs related to the API
         - IF the api input isn't enough, **ignore the schema** and return a message saying what's wrong
-  
+        - Give the API a proper name. For example: Weather Forecast API, Task Manager API
+        - Give the API a proper description which says what the API does in a concise way
+        - Extract the responses and requests from the input given
+
         Thank you <3
       `,
     });

@@ -9,16 +9,9 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
-import { Check, Code, Menu, MessageCircleQuestion, Server } from "lucide-react";
-import Link from "next/link";
+import { SidebarTrigger } from "@/components/ui/sidebar";
+
+import { Check } from "lucide-react";
 import { useState } from "react";
 
 function Page() {
@@ -28,49 +21,15 @@ function Page() {
 
   return (
     <>
-      {/* Floating Menu */}
-      <div className="fixed bottom-5 right-5 p-2">
-        <Sheet>
-          <SheetTrigger className="rounded-full size-10 p-0 text-black bg-primary grid place-content-center">
-            <Menu />
-          </SheetTrigger>
-          <SheetContent>
-            <SheetHeader>
-              <SheetTitle className="text-3xl font-bold">
-                {apiDoc?.name}
-              </SheetTitle>
-              <SheetDescription>{apiDoc?.description}</SheetDescription>
-            </SheetHeader>
-
-            <Link href={`/${apiDoc?.id}`} className="w-full">
-              <Button variant="ghost" className="w-full justify-start">
-                <Server />
-                Endpoints
-              </Button>
-            </Link>
-
-            <Link href={`/${apiDoc?.id}/sdks`} className="w-full">
-              <Button variant="ghost" className="w-full justify-start">
-                <Code />
-                SDKs
-              </Button>
-            </Link>
-
-            <Link href={`/${apiDoc?.id}/faqs`} className="w-full">
-              <Button variant="ghost" className="w-full justify-start">
-                <MessageCircleQuestion />
-                FAQs
-              </Button>
-            </Link>
-          </SheetContent>
-        </Sheet>
-      </div>
-
       {/* Main Section */}
       <section className="px-5">
         <div className="flex justify-between flex-col-reverse md:flex-row">
           <div>
-            <h2 className="text-4xl font-bold">{apiDoc?.name}</h2>
+            <h2 className="text-4xl font-bold">
+              <SidebarTrigger className="mr-5" />
+
+              {apiDoc?.name}
+            </h2>
             <p className="mt-2 text-gray-300">{apiDoc?.description}</p>
           </div>
 
@@ -101,7 +60,11 @@ function Page() {
 
         <div className="flex flex-col gap-16 mt-10">
           {apiDoc?.endpoints.map((endpoint) => (
-            <div key={endpoint.id} className="border p-5 rounded-lg shadow-md">
+            <div
+              id={`${endpoint.method.toLowerCase()}-${endpoint.path}`}
+              key={endpoint.id}
+              className="border p-5 rounded-lg shadow-md"
+            >
               <h3 className="text-2xl font-mono mb-2">
                 <span className="text-primary">{endpoint.method}</span>{" "}
                 {endpoint.path}
@@ -117,14 +80,16 @@ function Page() {
                 ""
               )}
 
-              {(endpoint.headers as object) && (
-                <div className="mb-5">
-                  <p className="font-bold">Headers:</p>
-                  <pre className=" p-2 rounded">
-                    {JSON.stringify(endpoint.headers, null, 2)}
-                  </pre>
-                </div>
-              )}
+              {Object.keys(endpoint.headers!).length > 0
+                ? (endpoint.headers as object) && (
+                    <div className="mb-5">
+                      <p className="font-bold">Headers:</p>
+                      <pre className=" p-2 rounded">
+                        {JSON.stringify(endpoint.headers, null, 2)}
+                      </pre>
+                    </div>
+                  )
+                : ""}
 
               {endpoint.queryParams!.length > 0 && (
                 <div className="mb-5">

@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     await addDoc(generatedDoc, body.user);
     return NextResponse.json({ message: "ok" });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Error" }, { status: 400 });
   }
 }
