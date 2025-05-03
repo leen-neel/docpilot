@@ -10,8 +10,8 @@ export const EndpointSchema = z.object({
   summary: z.string(),
   description: z.string(),
   tags: z.array(z.string()),
-  security: z.string().optional(),
-  headers: z.record(z.string()).optional(),
+  security: z.string().nullable(),
+  headers: z.record(z.string()).nullable(),
 
   queryParams: z
     .array(
@@ -20,10 +20,10 @@ export const EndpointSchema = z.object({
         type: z.string(),
         required: z.boolean(),
         description: z.string(),
-        default: z.any().optional(),
+        default: z.any().nullable(),
       })
     )
-    .optional(),
+    .nullable(),
 
   pathParams: z
     .array(
@@ -34,7 +34,7 @@ export const EndpointSchema = z.object({
         description: z.string(),
       })
     )
-    .optional(),
+    .nullable(),
 
   request: z
     .array(
@@ -43,7 +43,7 @@ export const EndpointSchema = z.object({
         example: z.any(),
       })
     )
-    .optional(),
+    .nullable(),
 
   responses: z
     .array(
@@ -53,7 +53,7 @@ export const EndpointSchema = z.object({
         status: z.number(),
       })
     )
-    .optional(),
+    .nullable(),
 });
 
 export const wrapperSchema = z.object({

@@ -6,7 +6,7 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
@@ -20,6 +20,11 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+const spaceGrotesk = Space_Grotesk({
+  variable: "--space-grotesk",
   subsets: ["latin"],
 });
 
@@ -41,7 +46,9 @@ export default function RootLayout({
         >
           <header className="flex justify-between mb-10 p-10">
             <h1 className="text-4xl font-bold text-primary">
-              <Link href="/">DocPilot</Link>
+              <Link className={spaceGrotesk.className} href="/">
+                DocPilot
+              </Link>
             </h1>
 
             <SignedIn>

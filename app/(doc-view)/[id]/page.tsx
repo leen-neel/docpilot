@@ -80,7 +80,7 @@ function Page() {
                 ""
               )}
 
-              {Object.keys(endpoint.headers!).length > 0
+              {endpoint.headers
                 ? (endpoint.headers as object) && (
                     <div className="mb-5">
                       <p className="font-bold">Headers:</p>

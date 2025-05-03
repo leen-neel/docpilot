@@ -6,11 +6,13 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
 
   try {
-    const generatedDoc = await generateDocs("typescript", body.body);
+    const generatedDoc = await generateDocs(body.language, body.body);
 
     await addDoc(generatedDoc, body.user);
     return NextResponse.json({ message: "ok" });
-  } catch {
+  } catch (error) {
+    console.error(error);
+
     return NextResponse.json({ message: "Error" }, { status: 400 });
   }
 }

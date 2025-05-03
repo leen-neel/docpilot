@@ -7,10 +7,18 @@ import { useUser } from "@clerk/nextjs";
 import { RefreshCcw } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const HomePage = () => {
   const [fileContents, setfileContents] = useState("");
   const [loading, setloading] = useState(false);
+  const [language, setLanguage] = useState("typescript");
 
   const { user } = useUser();
   const router = useRouter();
@@ -50,6 +58,7 @@ const HomePage = () => {
         body: JSON.stringify({
           user: user!.id,
           body: fileContents,
+          language,
         }),
       });
 
@@ -67,12 +76,29 @@ const HomePage = () => {
       <h1 className="text-3xl font-bold mb-6">Upload Your API Documentation</h1>
       <FileUpload onFileUpload={handleFileUpload} />
 
-      {fileContents !== "" && (
-        <Button className="mt-5" onClick={handleProcess} disabled={loading}>
-          {loading ? <RefreshCcw className="animate-spin" /> : ""}
+      <div>
+        <p className="text-center my-5">Select SDK Language:</p>
+        <Select value={language} onValueChange={setLanguage}>
+          <SelectTrigger className="w-lg mt-5">
+            <SelectValue placeholder="Language" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="typescript">TypeScript</SelectItem>
+            <SelectItem value="javascript">JavaScript</SelectItem>
+            <SelectItem value="python">Python</SelectItem>
+            <SelectItem value="php">PHP</SelectItem>
+            <SelectItem value="perl">Perl</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
 
-          {loading ? "Loading" : "Proceed"}
-        </Button>
+      {fileContents !== "" && (
+        <div>
+          <Button className="mt-5" onClick={handleProcess} disabled={loading}>
+            {loading ? <RefreshCcw className="animate-spin" /> : ""}
+            {loading ? "Loading" : "Proceed"}
+          </Button>
+        </div>
       )}
     </main>
   );

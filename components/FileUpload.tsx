@@ -23,8 +23,6 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload }) => {
         "application/x-yaml": [".yaml", ".yml"],
         "text/plain": [".txt"],
         "application/pdf": [".pdf"],
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
-          [".docx"],
       },
       multiple: false,
     });

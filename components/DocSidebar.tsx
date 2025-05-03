@@ -10,8 +10,9 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 import { useDoc } from "@/app/context/DocContext";
-import { Code, MessageCircleQuestion } from "lucide-react";
+import { ChevronLeft, Code, MessageCircleQuestion } from "lucide-react";
 import Link from "next/link";
+import { Button } from "./ui/button";
 
 function DocSidebar() {
   const doc = useDoc();
@@ -35,6 +36,12 @@ function DocSidebar() {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarHeader>
+              <Link href="/">
+                <Button variant="ghost" size="icon">
+                  <ChevronLeft className="mb-2" />
+                </Button>
+              </Link>
+
               <div className="text-2xl font-bold">{doc?.name}</div>
               <p className="text-sm text-gray-400">{doc?.description}</p>
             </SidebarHeader>

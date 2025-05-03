@@ -20,6 +20,8 @@ export const generateDocs = async (lang: string, api: unknown) => {
     `,
   });
 
+  console.log(text);
+
   if (text.includes("passed")) {
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
@@ -31,9 +33,9 @@ export const generateDocs = async (lang: string, api: unknown) => {
         - Generate only the code, no extra text
         - Use the given schema
         - The api input is: ${api}
+        - If the input is json or yml, extract the response, request etc. from the given input. **DO NOT** infer any of those contents by yourself if they're provided.
         - In the sdkWrappers field, generate the full sdk wrapper with proper type safety (if applicable) in ${lang}
         - In the faqs field, generate 5 FAQs related to the API
-        - IF the api input isn't enough, **ignore the schema** and return a message saying what's wrong
         - Give the API a proper name. For example: Weather Forecast API, Task Manager API
         - Give the API a proper description which says what the API does in a concise way
         - Extract the responses and requests from the input given
@@ -41,6 +43,7 @@ export const generateDocs = async (lang: string, api: unknown) => {
         Thank you <3
       `,
     });
+
     return object;
   } else {
     throw new Error("API doc not good enough");
