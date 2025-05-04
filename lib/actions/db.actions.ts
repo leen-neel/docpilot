@@ -1,18 +1,13 @@
 import * as schema from "@/drizzle/schema";
-
-import { drizzle } from "drizzle-orm/neon-http";
-import { neon } from "@neondatabase/serverless";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { DocSchema } from "@/constants";
 import { z } from "zod";
-
-const pg = neon(process.env.DATABASE_URL!);
-const db = drizzle({ client: pg, schema: schema });
+import { db } from "@/lib/db";
 
 const {
   apiDocs,
   servers,
-  endpoints,
+  endpoints: endpointsTable,
   queryParams,
   pathParams,
   faqs,
@@ -73,7 +68,7 @@ export const addDoc = async (doc: APIDoc, userId: string) => {
 
   for (const endpoint of doc.endpoints) {
     const endpointEntry = await db
-      .insert(endpoints)
+      .insert(endpointsTable)
       .values({
         apiId: apiDoc[0].id,
         method: endpoint.method,
@@ -85,7 +80,7 @@ export const addDoc = async (doc: APIDoc, userId: string) => {
         tags: endpoint.tags,
       })
       .returning({
-        id: endpoints.id,
+        id: endpointsTable.id,
       });
 
     // QUERY PARAMS
@@ -161,122 +156,69 @@ export const addDoc = async (doc: APIDoc, userId: string) => {
   return "ok";
 };
 
-export const seed = async () => {
-  await db.insert(apiDocs).values({
-    id: "11111111-1111-1111-1111-111111111111",
-    name: "Weather Forecast API",
-    description: "Provides real-time and forecasted weather data.",
-    baseURL: "https://api.weatherpro.com/v1",
-    userId: "user_2wGJLNIxBmL5M3tCQG5TbbTwdx1",
+export async function getMockResponse(
+  apiId: string,
+  path: string,
+  method: string
+) {
+  // Get all endpoints for this API
+  const allEndpoints = await db.query.endpoints.findMany({
+    where: eq(endpointsTable.apiId, apiId),
+    with: {
+      responses: true,
+    },
   });
 
-  await db.insert(servers).values([
-    {
-      id: "22222222-2222-2222-2222-222222222222",
-      apiId: "11111111-1111-1111-1111-111111111111",
-      url: "https://api.weatherpro.com/v1",
-      description: "Primary production server",
-    },
-  ]);
+  // Find the best matching endpoint
+  const matchingEndpoint = allEndpoints.find(
+    (endpoint: typeof endpointsTable.$inferSelect) => {
+      // Convert both paths to lowercase for comparison
+      const storedPath = endpoint.path.toLowerCase();
+      const requestPath = path.toLowerCase();
 
-  await db.insert(endpoints).values([
-    {
-      id: "33333333-3333-3333-3333-333333333333",
-      apiId: "11111111-1111-1111-1111-111111111111",
-      method: "GET",
-      path: "/forecast",
-      summary: "Get 7-day weather forecast",
-      security: "API key required in header",
-      headers: {
-        Authorization: "Bearer <API_KEY>",
-      },
-      tags: ["forecast", "weather"],
-      description: "Returns a 7-day forecast for a specific location.",
-    },
-  ]);
+      // Check if the paths match (allowing for path parameters)
+      const storedPathSegments = storedPath.split("/");
+      const requestPathSegments = requestPath.split("/");
 
-  await db.insert(queryParams).values([
-    {
-      id: "44444444-4444-4444-4444-444444444444",
-      endpointId: "33333333-3333-3333-3333-333333333333",
-      name: "lat",
-      type: "float",
-      required: true,
-      description: "Latitude of the location",
-    },
-    {
-      id: "55555555-5555-5555-5555-555555555555",
-      endpointId: "33333333-3333-3333-3333-333333333333",
-      name: "lon",
-      type: "float",
-      required: true,
-      description: "Longitude of the location",
-    },
-  ]);
+      if (storedPathSegments.length !== requestPathSegments.length) {
+        return false;
+      }
 
-  await db.insert(requests).values([
-    {
-      id: "66666666-6666-6666-6666-666666666666",
-      endpointId: "33333333-3333-3333-3333-333333333333",
-      description: "Example request for forecast endpoint",
-      example: {
-        method: "GET",
-        url: "https://api.weatherpro.com/v1/forecast?lat=37.7749&lon=-122.4194",
-        headers: {
-          Authorization: "Bearer demo_api_key",
-        },
-      },
-    },
-  ]);
+      // Check each segment
+      for (let i = 0; i < storedPathSegments.length; i++) {
+        const storedSegment = storedPathSegments[i];
+        const requestSegment = requestPathSegments[i];
 
-  await db.insert(responses).values([
-    {
-      id: "77777777-7777-7777-7777-777777777777",
-      endpointId: "33333333-3333-3333-3333-333333333333",
-      status: "200",
-      description: "Successful response with forecast data",
-      example: {
-        location: "San Francisco",
-        forecast: [
-          { day: "Monday", temp: 20, condition: "Sunny" },
-          { day: "Tuesday", temp: 18, condition: "Cloudy" },
-        ],
-      },
-    },
-  ]);
+        // If the stored segment is a parameter (e.g., {id}), skip comparison
+        if (storedSegment.startsWith("{") && storedSegment.endsWith("}")) {
+          continue;
+        }
 
-  await db.insert(sdkWrappers).values([
-    {
-      id: "88888888-8888-8888-8888-888888888888",
-      apiId: "11111111-1111-1111-1111-111111111111",
-      language: "JavaScript",
-      code: [
-        `async function getForecast(lat, lon) {`,
-        `  const response = await fetch(\`https://api.weatherpro.com/v1/forecast?lat=\${lat}&lon=\${lon}\`, {`,
-        `    headers: { 'Authorization': 'Bearer YOUR_API_KEY' }`,
-        `  });`,
-        `  return response.json();`,
-        `}`,
-      ],
-    },
-  ]);
+        if (storedSegment !== requestSegment) {
+          return false;
+        }
+      }
 
-  console.log("✅ SEED DATA INSERTED");
-};
+      // Check if methods match (case-insensitive)
+      return endpoint.method.toLowerCase() === method.toLowerCase();
+    }
+  );
 
-export const faqSeed = async () => {
-  await db.insert(faqs).values([
-    {
-      apiId: "11111111-1111-1111-1111-111111111111",
-      question: "Question 1",
-      answer: "Answer 1",
-    },
-    {
-      apiId: "11111111-1111-1111-1111-111111111111",
-      question: "Question 2",
-      answer: "Answer 2",
-    },
-  ]);
+  if (!matchingEndpoint) {
+    console.error(
+      `No matching endpoint found for path: ${path}, method: ${method}`
+    );
+    throw new Error("Endpoint not found");
+  }
 
-  console.log("SEED DATA SEEDED");
-};
+  const response = matchingEndpoint.responses[0];
+  if (!response) {
+    console.error(`No response found for endpoint: ${matchingEndpoint.path}`);
+    throw new Error("No response example found");
+  }
+
+  return {
+    data: response.example,
+    status: Number(response.status),
+  };
+}

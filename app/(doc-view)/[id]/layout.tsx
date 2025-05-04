@@ -6,22 +6,18 @@ import "@/app/globals.css";
 import { getDocById } from "@/lib/actions/db.actions";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import DocSidebar from "@/components/DocSidebar";
+import { Toaster } from "sonner";
 
 export const metadata: Metadata = {
   title: "DocPilot",
   description: "Generate your API docs in seconds!",
 };
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 export default async function RootLayout({
@@ -39,13 +35,13 @@ export default async function RootLayout({
     <ClerkProvider>
       <DocProvider value={doc}>
         <html lang="en">
-          <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased dark p-2 md:p-10`}
-          >
+          <body className={`${inter.className} antialiased dark`}>
             <SidebarProvider>
               <DocSidebar />
-
-              <main className="w-full">{children}</main>
+              <Toaster richColors position="top-right" />
+              <div className="p-2 md:p-10 w-full">
+                <main className="w-full">{children}</main>
+              </div>
             </SidebarProvider>
           </body>
         </html>

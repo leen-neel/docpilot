@@ -4,32 +4,35 @@ import { Check, Copy } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { BundledLanguage } from "shiki";
 import { codeToHtml } from "shiki";
+import { Loader2 } from "lucide-react";
 
 interface Props {
   children: string;
   lang: BundledLanguage;
 }
 
-function CodeBlock(props: Props) {
-  const [html, sethtml] = useState<string | TrustedHTML>("");
+function CodeBlock({ children, lang }: Props) {
+  const [html, setHtml] = useState<string>("");
+  const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     async function fetchHtml() {
-      const out = await codeToHtml(props.children, {
-        lang: props.lang,
+      setLoading(true);
+      const out = await codeToHtml(children, {
+        lang,
         theme: "material-theme-palenight",
       });
-
-      sethtml(out);
+      setHtml(out);
+      setLoading(false);
     }
 
     fetchHtml();
-  }, [props.children, props.lang]);
+  }, [children, lang]);
 
   const copyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(props.children);
+      await navigator.clipboard.writeText(children);
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
@@ -38,17 +41,35 @@ function CodeBlock(props: Props) {
   };
 
   return (
-    <div className="relative code-block">
+    <div className="relative bg-[#292D3E] rounded-xl overflow-hidden shadow-lg group">
       <button
         onClick={copyToClipboard}
-        className="mb-5 bg-gray-700 text-white text-sm px-2 py-1 rounded hover:bg-gray-600 transition"
+        className="absolute top-3 right-3 z-10 bg-[#1E222F] text-white text-xs px-2 py-1 rounded flex items-center gap-1 hover:bg-[#3E4451] transition"
+        title="Copy code"
       >
-        {!copied ? <Copy /> : <Check />}
+        {copied ? (
+          <>
+            <Check size={16} className="text-green-400" />
+            Copied!
+          </>
+        ) : (
+          <>
+            <Copy size={16} />
+            Copy
+          </>
+        )}
       </button>
-      <div
-        className="w-full overflow-auto"
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <Loader2 className="animate-spin text-white" size={24} />
+        </div>
+      ) : (
+        <div
+          className="w-full overflow-auto text-sm leading-relaxed p-3"
+          dangerouslySetInnerHTML={{ __html: html }}
+        />
+      )}
     </div>
   );
 }

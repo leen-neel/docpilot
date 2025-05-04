@@ -6,25 +6,21 @@ import {
   SignedOut,
   UserButton,
 } from "@clerk/nextjs";
-import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Toaster } from "sonner";
+import { dark } from "@clerk/themes";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+  variable: "--font-inter",
 });
 
 const spaceGrotesk = Space_Grotesk({
-  variable: "--space-grotesk",
+  variable: "--font-space-grotesk",
   subsets: ["latin"],
 });
 
@@ -39,11 +35,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <ClerkProvider>
+    <ClerkProvider
+      appearance={{
+        baseTheme: dark,
+      }}
+    >
       <html lang="en">
-        <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased dark`}
-        >
+        <body className={`${inter.className} antialiased dark`}>
           <header className="flex justify-between mb-10 p-10">
             <h1 className="text-4xl font-bold text-primary">
               <Link className={spaceGrotesk.className} href="/">
@@ -63,10 +61,6 @@ export default function RootLayout({
                 <UserButton />
               </div>
             </SignedIn>
-
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
           </header>
           <main className="px-10">{children}</main>
 

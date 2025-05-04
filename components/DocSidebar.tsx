@@ -10,12 +10,20 @@ import {
   SidebarMenuItem,
 } from "./ui/sidebar";
 import { useDoc } from "@/app/context/DocContext";
-import { ChevronLeft, Code, MessageCircleQuestion } from "lucide-react";
+import {
+  ChevronLeft,
+  Code,
+  MessageCircleQuestion,
+  ServerIcon,
+} from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { usePathname } from "next/navigation";
 
 function DocSidebar() {
   const doc = useDoc();
+
+  const pathname = usePathname();
 
   const helpItems = [
     {
@@ -27,6 +35,11 @@ function DocSidebar() {
       link: `/${doc?.id}/faqs`,
       icon: <MessageCircleQuestion />,
       label: "FAQs",
+    },
+    {
+      link: `/${doc?.id}/mock-server`,
+      icon: <ServerIcon />,
+      label: "Mock Server",
     },
   ];
 
@@ -72,6 +85,14 @@ function DocSidebar() {
                 <Link key={help.label} href={help.link}>
                   <SidebarMenuItem>
                     <SidebarMenuButton className="cursor-pointer">
+                      <span
+                        className={
+                          pathname === help.link
+                            ? "bg-primary w-2 h-full rounded-xl"
+                            : ""
+                        }
+                      ></span>
+
                       {help.icon}
                       {help.label}
                     </SidebarMenuButton>
