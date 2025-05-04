@@ -10,7 +10,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, Send } from "lucide-react";
@@ -18,8 +17,7 @@ import { Copy, Send } from "lucide-react";
 export default function Page() {
   const doc = useDoc();
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
-  const [requestBody, setRequestBody] = useState("");
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const getEndpoint = (id: string) =>
@@ -47,9 +45,9 @@ export default function Page() {
           },
         }
       );
-      
+
       const data = await response.json();
-      
+
       setResponse(data);
       toast.success("Request successful!");
     } catch (error) {
@@ -82,7 +80,10 @@ export default function Page() {
             <p className="text-sm font-medium text-muted-foreground">
               Select Endpoint:
             </p>
-            <Select value={selectedEndpoint} onValueChange={setSelectedEndpoint}>
+            <Select
+              value={selectedEndpoint}
+              onValueChange={setSelectedEndpoint}
+            >
               <SelectTrigger className="w-full mt-2">
                 <SelectValue placeholder="Choose an endpoint" />
               </SelectTrigger>

@@ -44,7 +44,7 @@
 }
 
 :root {
-  --radius: 0.5rem;
+  --radius: 0.75rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.141 0.005 285.823);
   --card: oklch(1 0 0);
@@ -150,8 +150,65 @@ html {
   scrollbar-gutter: stable;
 }
 
+/* Enhanced scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--muted);
+}
+
+/* Enhanced code block styling */
 .code-block pre {
-  padding: 1rem;
-  border-radius: 8px;
+  padding: 1.5rem;
+  border-radius: var(--radius);
   width: fit-content;
+  background: var(--card);
+  border: 1px solid var(--border);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Smooth transitions */
+* {
+  transition: background-color 0.2s ease, border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+/* Enhanced focus styles */
+:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius);
+}
+
+/* Premium card styling */
+.card {
+  @apply rounded-lg border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md;
+}
+
+/* Premium button hover effects */
+button {
+  @apply transition-all duration-200 ease-in-out;
+}
+
+button:hover {
+  transform: translateY(-1px);
+}
+
+/* Premium input styling */
+input,
+textarea,
+select {
+  @apply rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
 }

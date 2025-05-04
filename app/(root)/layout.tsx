@@ -41,19 +41,22 @@ export default function RootLayout({
       }}
     >
       <html lang="en">
-        <body className={`${inter.className} antialiased dark`}>
-          <header className="flex justify-between mb-10 p-10">
-            <h1 className="text-4xl font-bold text-primary">
+        <body
+          className={`${inter.className} antialiased dark min-h-screen bg-gradient-to-b from-background to-background/80`}
+        >
+          <div className="fixed inset-0 -z-10 h-full w-full bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px]" />
+          <header className="flex justify-between items-center mb-6 p-6 border-b border-border/20">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
               <Link className={spaceGrotesk.className} href="/">
                 DocPilot
               </Link>
             </h1>
 
             <SignedIn>
-              <div className="flex gap-5">
+              <div className="flex gap-4 items-center">
                 <Link href="/new">
-                  <Button>
-                    <Plus />
+                  <Button className="bg-primary/90 hover:bg-primary transition-colors">
+                    <Plus className="size-4" />
                     <span className="hidden md:block">Create New Doc</span>
                   </Button>
                 </Link>
@@ -62,9 +65,9 @@ export default function RootLayout({
               </div>
             </SignedIn>
           </header>
-          <main className="px-10">{children}</main>
+          <main className="px-6 max-w-7xl mx-auto">{children}</main>
 
-          <Toaster />
+          <Toaster richColors position="top-right" />
         </body>
       </html>
     </ClerkProvider>

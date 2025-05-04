@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { getDocs } from "@/lib/actions/db.actions";
 import { SignedIn, SignedOut, SignUpButton } from "@clerk/nextjs";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, FileText } from "lucide-react";
 import Link from "next/link";
 
 async function Page() {
@@ -16,14 +16,25 @@ async function Page() {
   return (
     <>
       <SignedOut>
-        <div className="min-h-screen flex justify-center items-center flex-col">
-          <h2 className="text-4xl font-bold mb-5">
-            Want to start creating <span>awesome</span> docs?{" "}
-          </h2>
-
-          <SignUpButton>
-            <Button>Sign Up</Button>
-          </SignUpButton>
+        <div className="min-h-screen flex justify-center items-center flex-col bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
+          <div className="text-center space-y-6 max-w-2xl px-4">
+            <div className="flex justify-center">
+              <FileText className="w-16 h-16 mb-4" />
+            </div>
+            <h2 className="text-5xl font-bold tracking-tight">
+              Create <span className="text-yellow-300">beautiful</span>{" "}
+              documentation
+            </h2>
+            <p className="text-xl opacity-90">
+              Transform your ideas into stunning documentation with our
+              intuitive platform. Start your journey today.
+            </p>
+            <SignUpButton>
+              <Button className="bg-white text-indigo-600 hover:bg-gray-100 text-lg px-8 py-6 rounded-full font-semibold shadow-lg transition-all duration-300 hover:scale-105">
+                Get Started
+              </Button>
+            </SignUpButton>
+          </div>
         </div>
       </SignedOut>
 
