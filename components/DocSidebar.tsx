@@ -15,6 +15,7 @@ import {
   Code,
   MessageCircleQuestion,
   ServerIcon,
+  Terminal,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -40,6 +41,11 @@ function DocSidebar() {
       link: `/${doc?.id}/mock-server`,
       icon: <ServerIcon />,
       label: "Mock Server",
+    },
+    {
+      link: `/${doc?.id}/api-playground`,
+      icon: <Terminal />,
+      label: "API Playground",
     },
   ];
 

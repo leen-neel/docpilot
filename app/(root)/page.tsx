@@ -16,13 +16,14 @@ async function Page() {
   return (
     <>
       <SignedOut>
-        <div className="min-h-screen flex justify-center items-center flex-col bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 text-white">
-          <div className="text-center space-y-6 max-w-2xl px-4">
+        <div className="min-h-screen flex justify-center items-center flex-col relative overflow-hidden">
+          <div className="absolute inset-0  animate-pulse"></div>
+          <div className="text-center space-y-6 max-w-2xl px-4 relative z-10">
             <div className="flex justify-center">
               <FileText className="w-16 h-16 mb-4" />
             </div>
             <h2 className="text-5xl font-bold tracking-tight">
-              Create <span className="text-yellow-300">beautiful</span>{" "}
+              Create <span className="text-primary">beautiful</span>{" "}
               documentation
             </h2>
             <p className="text-xl opacity-90">
@@ -30,7 +31,7 @@ async function Page() {
               intuitive platform. Start your journey today.
             </p>
             <SignUpButton>
-              <Button className="bg-white text-indigo-600 hover:bg-gray-100 text-lg px-8 py-6 rounded-full font-semibold shadow-lg transition-all duration-300 hover:scale-105">
+              <Button className="text-black text-lg px-8 py-6 rounded-full font-semibold shadow-lg transition-all duration-300 hover:scale-105">
                 Get Started
               </Button>
             </SignUpButton>
