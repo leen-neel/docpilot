@@ -29,8 +29,6 @@ const HomePage = () => {
     if (file.type !== "application/pdf") {
       const cont: string = await file.text();
       setfileContents(cont.replace(/[\n\s]+/g, ""));
-      console.log(cont.replace(/[\n\s]+/g, ""));
-
       return;
     }
 

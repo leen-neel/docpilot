@@ -43,9 +43,9 @@ function DocSidebar() {
       label: "Mock Server",
     },
     {
-      link: `/${doc?.id}/api-playground`,
+      link: `/${doc?.id}/api-console`,
       icon: <Terminal />,
-      label: "API Playground",
+      label: "API Console",
     },
   ];
 
