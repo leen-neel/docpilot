@@ -1,5 +1,5 @@
 import * as schema from "@/drizzle/schema";
-import { eq, and } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { DocSchema } from "@/constants";
 import { z } from "zod";
 import { db } from "@/lib/db";

@@ -51,7 +51,7 @@ function Page() {
   );
   const [headers, setHeaders] = useState<Header[]>([{ key: "", value: "" }]);
   const [body, setBody] = useState("");
-  const [response, setResponse] = useState<any>(null);
+  const [response, setResponse] = useState<object | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedEndpoint, setSelectedEndpoint] = useState<Endpoint | null>(

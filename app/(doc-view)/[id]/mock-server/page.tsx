@@ -14,14 +14,29 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Copy, Send } from "lucide-react";
 
+type NetworkCondition = "stable" | "unstable";
+type ResponseScenario = "success" | "error" | "timeout" | "throttling";
+
 export default function Page() {
   const doc = useDoc();
   const [selectedEndpoint, setSelectedEndpoint] = useState("");
   const [response, setResponse] = useState<unknown>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [networkCondition, setNetworkCondition] =
+    useState<NetworkCondition>("stable");
+  const [responseScenario, setResponseScenario] =
+    useState<ResponseScenario>("success");
 
   const getEndpoint = (id: string) =>
     doc?.endpoints.find((endpoint) => endpoint.id === id);
+
+  const simulateNetworkDelay = async () => {
+    if (networkCondition === "unstable") {
+      // Random delay between 1-3 seconds for unstable network
+      const delay = Math.random() * 2000 + 1000;
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  };
 
   const handleSendRequest = async () => {
     if (!selectedEndpoint) {
@@ -34,6 +49,22 @@ export default function Page() {
 
     setIsLoading(true);
     try {
+      // Simulate network delay based on condition
+      await simulateNetworkDelay();
+
+      // Handle different response scenarios
+      switch (responseScenario) {
+        case "timeout":
+          throw new Error("Request timed out");
+        case "error":
+          throw new Error("401 Unauthorized");
+        case "throttling":
+          if (Math.random() > 0.5) {
+            throw new Error("429 Too Many Requests");
+          }
+          break;
+      }
+
       const response = await fetch(
         `/api/mock/${doc?.id}?path=${encodeURIComponent(
           endpoint.path
@@ -47,12 +78,11 @@ export default function Page() {
       );
 
       const data = await response.json();
-
       setResponse(data);
       toast.success("Request successful!");
     } catch (error) {
-      toast.error("Failed to send request");
-      console.error(error);
+      setResponse({ error: (error as Error).message });
+      toast.error((error as Error).message);
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +95,9 @@ export default function Page() {
     const curlCommand = `curl -X ${endpoint.method.toUpperCase()} \\
   "${window.location.origin}/api/mock/${doc?.id}?path=${encodeURIComponent(
       endpoint.path
-    )}&method=${encodeURIComponent(endpoint.method)}" \\
+    )}&method=${encodeURIComponent(
+      endpoint.method
+    )}&networkCondition=${networkCondition}&responseScenario=${responseScenario}" \\
   -H "Content-Type: application/json"`;
 
     navigator.clipboard.writeText(curlCommand);
@@ -109,6 +141,49 @@ export default function Page() {
 
         {selectedEndpoint && (
           <>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  Network Condition:
+                </p>
+                <Select
+                  value={networkCondition}
+                  onValueChange={(value: NetworkCondition) =>
+                    setNetworkCondition(value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select network condition" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="stable">Stable Network</SelectItem>
+                    <SelectItem value="unstable">Unstable Network</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <p className="text-sm font-medium text-muted-foreground mb-2">
+                  Response Scenario:
+                </p>
+                <Select
+                  value={responseScenario}
+                  onValueChange={(value: ResponseScenario) =>
+                    setResponseScenario(value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select response scenario" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="success">Success</SelectItem>
+                    <SelectItem value="error">401 Unauthorized</SelectItem>
+                    <SelectItem value="timeout">Timeout</SelectItem>
+                    <SelectItem value="throttling">Throttling</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <h3 className="text-2xl font-bold">Request:</h3>

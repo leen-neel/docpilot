@@ -27,9 +27,13 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: { id: string };
 }>) {
-  const { id } = await params;
+  const { id } = params;
 
   const doc = await getDocById(id);
+
+  if (!doc) {
+    throw new Error(`Document with id ${id} not found`);
+  }
 
   return (
     <ClerkProvider>

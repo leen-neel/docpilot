@@ -1,11 +1,5 @@
 import { type Metadata } from "next";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider, SignedIn, UserButton } from "@clerk/nextjs";
 import { Inter, Space_Grotesk } from "next/font/google";
 import "../globals.css";
 import Link from "next/link";
@@ -13,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Toaster } from "sonner";
 import { dark } from "@clerk/themes";
+import { getDocs } from "@/lib/actions/db.actions";
+import { DocsProvider } from "@/app/context/DocsContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,11 +25,13 @@ export const metadata: Metadata = {
   description: "Generate your API docs in seconds!",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const docs = await getDocs();
+
   return (
     <ClerkProvider
       appearance={{
@@ -65,7 +63,9 @@ export default function RootLayout({
               </div>
             </SignedIn>
           </header>
-          <main className="px-6 max-w-7xl mx-auto">{children}</main>
+          <DocsProvider docs={docs}>
+            <main className="px-6 max-w-7xl mx-auto">{children}</main>
+          </DocsProvider>
 
           <Toaster richColors position="top-right" />
         </body>
