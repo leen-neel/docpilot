@@ -11,19 +11,21 @@ import {
   responses,
   sdkWrappers,
   servers,
+  requests,
 } from "@/drizzle/schema";
 
 type DocsType = typeof apiDocs.$inferSelect & {
   endpoints: Array<
     typeof endpoints.$inferSelect & {
-      responses: (typeof responses.$inferSelect)[];
-      queryParams: (typeof queryParams.$inferSelect)[];
-      pathParams: (typeof pathParams.$inferSelect)[];
+      responses: Array<typeof responses.$inferSelect>;
+      queryParams: Array<typeof queryParams.$inferSelect>;
+      pathParams: Array<typeof pathParams.$inferSelect>;
+      request: Array<typeof requests.$inferSelect>;
     }
   >;
-  servers: (typeof servers.$inferSelect)[];
-  faqs: (typeof faqs.$inferSelect)[];
-  sdkWrappers: (typeof sdkWrappers.$inferSelect)[];
+  servers: Array<typeof servers.$inferSelect>;
+  faqs: Array<typeof faqs.$inferSelect>;
+  sdkWrappers: Array<typeof sdkWrappers.$inferSelect>;
 };
 
 const DocContext = createContext<DocsType | undefined>(undefined);

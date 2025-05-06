@@ -109,7 +109,7 @@ function Page() {
                   </div>
                 )}
 
-                {endpoint.headers && (
+                {typeof endpoint.headers === "object" && endpoint.headers && (
                   <div className="space-y-2">
                     <p className="font-semibold">Headers</p>
                     <div className="bg-muted p-3 rounded-lg">
@@ -196,7 +196,7 @@ function Page() {
                               {req.description}
                             </p>
 
-                            {req.example && (
+                            {(req.example as object) && (
                               <CodeBlock lang="json">
                                 {JSON.stringify(req.example, null, 2)}
                               </CodeBlock>
@@ -231,7 +231,8 @@ function Page() {
                               </p>
                             </div>
 
-                            {Object.keys(response.example).length > 0 && (
+                            {Object.keys(response.example as object).length >
+                              0 && (
                               <CodeBlock lang="json">
                                 {JSON.stringify(response.example, null, 2)}
                               </CodeBlock>

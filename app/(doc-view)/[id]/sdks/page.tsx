@@ -105,14 +105,17 @@ require (
 )`;
   };
 
-  const handleDownloadCode = async (code: string[], language: string) => {
+  const handleDownloadCode = async (
+    code: string[] | null,
+    language: string
+  ) => {
     const zip = new JSZip();
     const sdkName = doc?.name || "api-sdk";
     const formattedName = sdkName.toLowerCase().replace(/\s+/g, "-");
 
     // Add the main SDK code
     const mainFile = getMainFileName(language);
-    zip.file(mainFile, code.join("\n"));
+    zip.file(mainFile, code!.join("\n"));
 
     // Add language-specific files
     switch (language.toLowerCase()) {
@@ -234,7 +237,7 @@ require (
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => handleCopyCode(sdk.code)}
+                    onClick={() => handleCopyCode(sdk.code!)}
                   >
                     <Copy className="h-4 w-4 mr-2" />
                     Copy
@@ -255,7 +258,7 @@ require (
                 <CodeHighlighter
                   lang={sdk.language.toLowerCase() as BundledLanguage}
                 >
-                  {sdk.code.join("\n")}
+                  {sdk.code!.join("\n")}
                 </CodeHighlighter>
               </div>
             </CardContent>
