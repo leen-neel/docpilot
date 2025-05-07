@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import {
   Loader2,
@@ -30,6 +30,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { useSearchParams, useRouter } from "next/navigation";
 
 interface Header {
   key: string;
@@ -46,6 +47,8 @@ interface Endpoint {
 
 function Page() {
   const doc = useDoc();
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [selectedServer, setSelectedServer] = useState(
     doc?.servers[0]?.url || ""
   );
@@ -58,6 +61,17 @@ function Page() {
     null
   );
   const [responseTime, setResponseTime] = useState<number | null>(null);
+
+  // Set initial endpoint from URL parameter
+  useEffect(() => {
+    const endpointId = searchParams.get("endpoint");
+    if (endpointId && doc?.endpoints) {
+      const endpoint = doc.endpoints.find((ep) => ep.id === endpointId);
+      if (endpoint) {
+        setSelectedEndpoint(endpoint as Endpoint);
+      }
+    }
+  }, [searchParams, doc?.endpoints]);
 
   const handleAddHeader = () => {
     setHeaders([...headers, { key: "", value: "" }]);
@@ -94,6 +108,9 @@ function Page() {
         return acc;
       }, {} as Record<string, string>);
 
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+
       const response = await fetch(`${selectedServer}${endpoint.path}`, {
         method: endpoint.method,
         headers: {
@@ -101,7 +118,10 @@ function Page() {
           ...headerObject,
         },
         body: body ? JSON.stringify(JSON.parse(body)) : undefined,
+        signal: controller.signal,
       });
+
+      clearTimeout(timeoutId);
 
       const data = await response.json();
       console.log(data);
@@ -119,6 +139,13 @@ function Page() {
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "An error occurred";
+
+      if (err instanceof Error && err.name === "AbortError") {
+        toast.error("Request timed out");
+        router.push("/");
+        return;
+      }
+
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {

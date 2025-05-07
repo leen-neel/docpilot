@@ -14,6 +14,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Icon } from "@iconify/react";
+
+const languageIcons = {
+  typescript: "devicon:typescript",
+  javascript: "devicon:javascript",
+  python: "devicon:python",
+  php: "devicon:php",
+  perl: "devicon:perl",
+  ruby: "devicon:ruby",
+  rust: "devicon:rust",
+  golang: "devicon:go",
+  java: "devicon:java",
+};
 
 const HomePage = () => {
   const [fileContents, setfileContents] = useState("");
@@ -32,7 +45,6 @@ const HomePage = () => {
       return;
     }
 
-    // Get array buffer of the file
     const arrayBuffer = await file.arrayBuffer();
 
     const res = await fetch("/api/parse-pdf", {
@@ -61,10 +73,9 @@ const HomePage = () => {
       });
 
       toast("Your doc has been created!");
-
       router.push("/");
     } catch {
-      toast("Somnething went wrong");
+      toast("Something went wrong");
       router.push("/");
     }
   };
@@ -76,16 +87,31 @@ const HomePage = () => {
 
       <div>
         <p className="text-center my-5">Select SDK Language:</p>
+
         <Select value={language} onValueChange={setLanguage}>
           <SelectTrigger className="w-lg mt-5">
-            <SelectValue placeholder="Language" />
+            <SelectValue placeholder="Language">
+              {language && (
+                <div className="flex items-center gap-2">
+                  <Icon
+                    icon={languageIcons[language as keyof typeof languageIcons]}
+                    width={20}
+                    height={20}
+                  />
+                  <span className="capitalize">{language}</span>
+                </div>
+              )}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="typescript">TypeScript</SelectItem>
-            <SelectItem value="javascript">JavaScript</SelectItem>
-            <SelectItem value="python">Python</SelectItem>
-            <SelectItem value="php">PHP</SelectItem>
-            <SelectItem value="perl">Perl</SelectItem>
+            {Object.entries(languageIcons).map(([lang, icon]) => (
+              <SelectItem key={lang} value={lang}>
+                <div className="flex items-center gap-2">
+                  <Icon icon={icon} width={20} height={20} />
+                  <span className="capitalize">{lang}</span>
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
@@ -93,8 +119,7 @@ const HomePage = () => {
       {fileContents !== "" && (
         <div>
           <Button className="mt-5" onClick={handleProcess} disabled={loading}>
-            {loading ? <RefreshCcw className="animate-spin" /> : ""}
-            {loading ? "Loading" : "Proceed"}
+            {loading ? <RefreshCcw className="animate-spin" /> : "Proceed"}
           </Button>
         </div>
       )}

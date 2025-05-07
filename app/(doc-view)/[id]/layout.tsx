@@ -1,4 +1,5 @@
 import { type Metadata } from "next";
+import { notFound } from "next/navigation";
 
 import { DocProvider } from "@/app/context/DocContext";
 
@@ -32,7 +33,7 @@ export default async function RootLayout({
   const doc = await getDocById(id);
 
   if (!doc) {
-    throw new Error(`Document with id ${id} not found`);
+    notFound();
   }
 
   return (

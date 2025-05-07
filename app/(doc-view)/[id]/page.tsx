@@ -13,9 +13,11 @@ import { SidebarTrigger } from "@/components/ui/sidebar";
 import { Badge } from "@/components/ui/badge";
 import { Check, ExternalLink } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 function Page() {
   const apiDoc = useDoc();
+  const router = useRouter();
   const [selectedServer, setSelectedServer] = useState(apiDoc?.servers[0].url);
 
   return (
@@ -184,7 +186,16 @@ function Page() {
                       <CardContent className="p-6">
                         <div className="flex items-center justify-between mb-4">
                           <p className="font-semibold text-lg">Request Body</p>
-                          <Button variant="ghost" size="sm" className="h-8">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="h-8"
+                            onClick={() =>
+                              router.push(
+                                `/${apiDoc?.id}/api-console?endpoint=${endpoint.id}`
+                              )
+                            }
+                          >
                             <ExternalLink className="h-4 w-4 mr-2" />
                             Try it
                           </Button>

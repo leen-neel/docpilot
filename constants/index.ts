@@ -1,5 +1,3 @@
-import { dummyDoc } from "./api_data";
-import { sdkLines } from "./sdk_data";
 import { z } from "zod";
 
 // Schema for the endpoints
@@ -82,5 +80,3 @@ export const DocSchema = z.object({
   sdkWrappers: z.array(wrapperSchema),
   faqs: z.array(faqSchema),
 });
-
-export { dummyDoc, sdkLines };

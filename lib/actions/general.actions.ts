@@ -34,7 +34,7 @@ export const generateDocs = async (lang: string, api: unknown) => {
         - Use the given schema
         - The api input is: ${api}
         - If the input is json or yml, extract the response, request etc. from the given input. **DO NOT** infer any of those contents by yourself if they're provided.
-        - In the sdkWrappers field, generate the full sdk wrapper with proper type safety (if applicable) in ${lang}
+        - In the sdkWrappers field, generate the full sdk wrapper with proper type safety (if applicable) in ${lang}. Ensure that the code is formatted properly and is readable. Add proper comments and documentation to the code. Make sure to add all the necessary imports. Also, add proper error handling and logging. If required, add documentation to the code at the top of the file as a multi-line comment.
         - In the faqs field, generate 5 FAQs related to the API
         - Give the API a proper name. For example: Weather Forecast API, Task Manager API
         - Give the API a proper description which says what the API does in a concise way
