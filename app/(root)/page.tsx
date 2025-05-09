@@ -19,7 +19,7 @@ export default async function Page() {
   return (
     <>
       <SignedOut>
-        <div className="min-h-screen flex justify-center items-center flex-col relative overflow-hidden bg-gradient-to-b from-background to-background/80">
+        <div className="min-h-screen flex justify-center items-center flex-col relative overflow-hidden bg-gradient-to-b from-background to-background/80 w-full ">
           {/* Animated gradient background */}
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background animate-pulse"></div>
 

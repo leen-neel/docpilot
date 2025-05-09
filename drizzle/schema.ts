@@ -3,6 +3,7 @@ import {
   boolean,
   jsonb,
   numeric,
+  pgEnum,
   pgTable,
   text,
   timestamp,
@@ -10,12 +11,27 @@ import {
   varchar,
 } from "drizzle-orm/pg-core";
 
+export const subscriptionEnum = pgEnum("subscription", [
+  "Runway",
+  "Takeoff",
+  "Cruise",
+]);
+
+export const users = pgTable("users", {
+  id: varchar("id", { length: 255 }).notNull().primaryKey(),
+  subscriptionStatus: subscriptionEnum("subscriptionStatus")
+    .default("Cruise")
+    .notNull(),
+});
+
 export const apiDocs = pgTable("apiDocs", {
   id: uuid("id").notNull().primaryKey().defaultRandom(),
   name: varchar("name", { length: 255 }).notNull(),
   description: varchar("description", { length: 355 }).notNull(),
   baseURL: varchar("baseURL", { length: 255 }).notNull(),
-  userId: varchar("userId", { length: 255 }).notNull(),
+  userId: varchar("userId")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
 });
 
 export const servers = pgTable("servers", {
@@ -102,6 +118,10 @@ export const faqs = pgTable("faqs", {
 });
 
 // RELATIONS
+
+export const userRelations = relations(users, ({ many }) => ({
+  docs: many(apiDocs),
+}));
 
 export const apiRelations = relations(apiDocs, ({ many }) => ({
   servers: many(servers),

@@ -14,9 +14,24 @@ const {
   responses,
   requests,
   sdkWrappers,
+  users,
 } = schema;
 
 type APIDoc = z.infer<typeof DocSchema>;
+
+export const createUser = async (userId: string) => {
+  await db.insert(users).values({
+    id: userId,
+  });
+
+  return "ok";
+};
+
+export const deleteUser = async (userId: string) => {
+  await db.delete(users).where(eq(users.id, userId));
+
+  return "ok";
+};
 
 export const getDocsByUserId = async (userId: string) => {
   const docs = await db.query.apiDocs.findMany({
