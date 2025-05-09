@@ -4,4 +4,4 @@ export const getCurrentUser = async () => {
   const session = await auth();
   if (!session.userId) return null;
   return session.userId;
-}; 
+};
