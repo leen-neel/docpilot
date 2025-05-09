@@ -11,7 +11,7 @@ const inter = Inter({
   variable: "--font-inter",
 });
 
-const metadata: Metadata = {
+export const metadata: Metadata = {
   title: "Document Not Found",
   description:
     "The API documentation you're looking for doesn't exist or has been moved.",

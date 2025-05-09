@@ -7,7 +7,7 @@ export const EndpointSchema = z.object({
   method: z.enum(["GET", "POST", "PATCH", "PUT", "DELETE"]),
   summary: z.string(),
   description: z.string(),
-  tags: z.array(z.string()),
+  category: z.string(),
   security: z.string().nullable(),
   headers: z.record(z.string()).nullable(),
 

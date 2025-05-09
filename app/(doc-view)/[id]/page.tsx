@@ -96,6 +96,8 @@ function Page() {
                     {endpoint.method}
                   </Badge>
                   <h3 className="text-xl font-mono">{endpoint.path}</h3>
+
+                  <p> {endpoint.cateogry} </p>
                 </div>
 
                 <p className="text-muted-foreground">{endpoint.description}</p>
@@ -114,11 +116,9 @@ function Page() {
                 {typeof endpoint.headers === "object" && endpoint.headers && (
                   <div className="space-y-2">
                     <p className="font-semibold">Headers</p>
-                    <div className="bg-muted p-3 rounded-lg">
-                      <pre className="text-sm">
-                        {JSON.stringify(endpoint.headers, null, 2)}
-                      </pre>
-                    </div>
+                    <CodeBlock lang="json">
+                      {JSON.stringify(endpoint.headers, null, 2)}
+                    </CodeBlock>
                   </div>
                 )}
 

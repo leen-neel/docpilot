@@ -119,7 +119,8 @@ const HomePage = () => {
       {fileContents !== "" && (
         <div>
           <Button className="mt-5" onClick={handleProcess} disabled={loading}>
-            {loading ? <RefreshCcw className="animate-spin" /> : "Proceed"}
+            {loading ? <RefreshCcw className="animate-spin" /> : ""}
+            {loading ? "Docs are being generated" : "Proceed"}
           </Button>
         </div>
       )}

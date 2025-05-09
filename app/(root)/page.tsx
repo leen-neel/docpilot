@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,10 +8,13 @@ import {
 import { SignedIn, SignedOut, SignUpButton } from "@clerk/nextjs";
 import { ChevronRight, FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
-import { useDocs } from "@/app/context/DocsContext";
+import { getDocsByUserId } from "@/lib/actions/db.actions";
+import { currentUser } from "@clerk/nextjs/server";
 
-export default function Page() {
-  const { docs } = useDocs();
+export default async function Page() {
+  const user = await currentUser();
+
+  const docs = user ? await getDocsByUserId(user.id) : [];
 
   return (
     <>

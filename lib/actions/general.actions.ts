@@ -20,8 +20,6 @@ export const generateDocs = async (lang: string, api: unknown) => {
     `,
   });
 
-  console.log(text);
-
   if (text.includes("passed")) {
     const { object } = await generateObject({
       model: google("gemini-2.0-flash-001", {
@@ -36,6 +34,7 @@ export const generateDocs = async (lang: string, api: unknown) => {
         - If the input is json or yml, extract the response, request etc. from the given input. **DO NOT** infer any of those contents by yourself if they're provided.
         - In the sdkWrappers field, generate the full sdk wrapper with proper type safety (if applicable) in ${lang}. Ensure that the code is formatted properly and is readable. Add proper comments and documentation to the code. Make sure to add all the necessary imports. Also, add proper error handling and logging. If required, add documentation to the code at the top of the file as a multi-line comment.
         - In the faqs field, generate 5 FAQs related to the API
+        - The "category" field under the endpoints field will have a category for the API endpoint. (e.g. Auth, Tasks, Blogs etc.)
         - Give the API a proper name. For example: Weather Forecast API, Task Manager API
         - Give the API a proper description which says what the API does in a concise way
         - Extract the responses and requests from the input given

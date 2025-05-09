@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import { Toaster } from "sonner";
 import { dark } from "@clerk/themes";
-import { getDocs } from "@/lib/actions/db.actions";
-import { DocsProvider } from "@/app/context/DocsContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -30,8 +28,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const docs = await getDocs();
-
   return (
     <ClerkProvider
       appearance={{
@@ -63,9 +59,7 @@ export default async function RootLayout({
               </div>
             </SignedIn>
           </header>
-          <DocsProvider docs={docs}>
-            <main className="px-6 max-w-7xl mx-auto">{children}</main>
-          </DocsProvider>
+          <main className="px-6 max-w-7xl mx-auto">{children}</main>
 
           <Toaster richColors position="top-right" />
         </body>

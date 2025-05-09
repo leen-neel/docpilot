@@ -43,6 +43,12 @@ interface Endpoint {
   path: string;
   summary?: string;
   description?: string;
+  pathParams?: {
+    name: string;
+    type: string;
+    required: boolean;
+    description: string;
+  }[];
 }
 
 function Page() {
@@ -61,6 +67,10 @@ function Page() {
     null
   );
   const [responseTime, setResponseTime] = useState<number | null>(null);
+  const [pathParamValues, setPathParamValues] = useState<
+    Record<string, string>
+  >({});
+  const [editingParam, setEditingParam] = useState<string | null>(null);
 
   // Set initial endpoint from URL parameter
   useEffect(() => {
@@ -108,10 +118,24 @@ function Page() {
         return acc;
       }, {} as Record<string, string>);
 
+      // Replace path parameters in the URL
+      let finalPath = endpoint.path;
+      if (endpoint.pathParams) {
+        for (const param of endpoint.pathParams) {
+          const value = pathParamValues[param.name];
+          if (param.required && !value) {
+            throw new Error(`Missing required path parameter: ${param.name}`);
+          }
+          if (value) {
+            finalPath = finalPath.replace(`{${param.name}}`, value);
+          }
+        }
+      }
+
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
 
-      const response = await fetch(`${selectedServer}${endpoint.path}`, {
+      const response = await fetch(`${selectedServer}${finalPath}`, {
         method: endpoint.method,
         headers: {
           "Content-Type": "application/json",
@@ -165,6 +189,63 @@ function Page() {
       colors[method as keyof typeof colors] ||
       "bg-gray-500/10 text-gray-500 border-gray-500/20"
     );
+  };
+
+  // Function to render the path with editable parameters
+  const renderPath = (path: string) => {
+    if (!selectedEndpoint?.pathParams) return path;
+
+    const parts = path.split(/(\{[^}]+\})/);
+    return parts.map((part, index) => {
+      if (part.startsWith("{") && part.endsWith("}")) {
+        const paramName = part.slice(1, -1);
+        const param = selectedEndpoint.pathParams?.find(
+          (p) => p.name === paramName
+        );
+        const value = pathParamValues[paramName] || "";
+
+        if (editingParam === paramName) {
+          return (
+            <Input
+              key={index}
+              value={value}
+              onChange={(e) => {
+                setPathParamValues({
+                  ...pathParamValues,
+                  [paramName]: e.target.value,
+                });
+              }}
+              onBlur={() => setEditingParam(null)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setEditingParam(null);
+                }
+              }}
+              placeholder={paramName}
+              className="inline-block w-32 h-6 px-2 py-1 text-sm bg-background/50 border-primary/50 focus:border-primary"
+              autoFocus
+            />
+          );
+        }
+
+        return (
+          <span
+            key={index}
+            onClick={() => setEditingParam(paramName)}
+            className={cn(
+              "inline-block px-2 py-0.5 rounded cursor-pointer transition-colors",
+              value
+                ? "bg-primary/10 text-primary border border-primary/20"
+                : "bg-muted text-muted-foreground border border-border hover:bg-accent"
+            )}
+            title={param?.description || `Click to edit ${paramName}`}
+          >
+            {value || paramName}
+          </span>
+        );
+      }
+      return <span key={index}>{part}</span>;
+    });
   };
 
   return (
@@ -273,8 +354,8 @@ function Page() {
                         >
                           {selectedEndpoint.method}
                         </Badge>
-                        <span className="font-mono">
-                          {selectedEndpoint.path}
+                        <span className="font-mono text-lg flex items-center gap-1">
+                          {renderPath(selectedEndpoint.path)}
                         </span>
                       </>
                     )}

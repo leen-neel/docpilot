@@ -10,6 +10,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Inter } from "next/font/google";
 import DocSidebar from "@/components/DocSidebar";
 import { Toaster } from "sonner";
+import { currentUser } from "@clerk/nextjs/server";
 
 export const metadata: Metadata = {
   title: "DocPilot",
@@ -26,11 +27,17 @@ export default async function RootLayout({
   params,
 }: Readonly<{
   children: React.ReactNode;
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }>) {
-  const { id } = params;
+  const { id } = await params;
 
-  const doc = await getDocById(id);
+  const user = await currentUser();
+
+  if (!user) {
+    notFound();
+  }
+
+  const doc = await getDocById(id, user.id);
 
   if (!doc) {
     notFound();

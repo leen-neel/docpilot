@@ -1,5 +1,5 @@
 import * as schema from "@/drizzle/schema";
-import { eq } from "drizzle-orm";
+import { eq, and } from "drizzle-orm";
 import { DocSchema } from "@/constants";
 import { z } from "zod";
 import { db } from "@/lib/db";
@@ -18,13 +18,15 @@ const {
 
 type APIDoc = z.infer<typeof DocSchema>;
 
-export const getDocs = async () => {
-  const docs = await db.query.apiDocs.findMany();
+export const getDocsByUserId = async (userId: string) => {
+  const docs = await db.query.apiDocs.findMany({
+    where: eq(apiDocs.userId, userId),
+  });
 
   return docs;
 };
 
-export const getDocById = async (id: string) => {
+export const getDocById = async (id: string, userId: string) => {
   const doc = await db.query.apiDocs.findFirst({
     with: {
       servers: true,
@@ -39,7 +41,7 @@ export const getDocById = async (id: string) => {
       sdkWrappers: true,
       faqs: true,
     },
-    where: eq(apiDocs.id, id),
+    where: and(eq(apiDocs.id, id), eq(apiDocs.userId, userId)),
   });
 
   return doc;
@@ -77,7 +79,7 @@ export const addDoc = async (doc: APIDoc, userId: string) => {
         security: endpoint.security,
         headers: endpoint.headers,
         description: endpoint.description,
-        tags: endpoint.tags,
+        cateogry: endpoint.category,
       })
       .returning({
         id: endpointsTable.id,
@@ -152,6 +154,14 @@ export const addDoc = async (doc: APIDoc, userId: string) => {
       }))
     );
   }
+
+  return "ok";
+};
+
+export const deleteDoc = async (id: string, userId: string) => {
+  await db
+    .delete(apiDocs)
+    .where(and(eq(apiDocs.id, id), eq(apiDocs.userId, userId)));
 
   return "ok";
 };

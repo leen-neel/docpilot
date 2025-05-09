@@ -1,0 +1,1 @@
+ALTER TABLE "endpoints" RENAME COLUMN "tags" TO "category";

@@ -38,7 +38,7 @@ export const endpoints = pgTable("endpoints", {
   security: text("security"),
   headers: jsonb("headers"),
   description: text("description"),
-  tags: jsonb("tags"),
+  cateogry: text("category").notNull(),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
