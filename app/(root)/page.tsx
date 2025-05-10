@@ -10,6 +10,7 @@ import { ChevronRight, FileText, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { getDocsByUserId } from "@/lib/actions/db.actions";
 import { currentUser } from "@clerk/nextjs/server";
+import { useUserStore } from "@/stores/user";
 
 export default async function Page() {
   const user = await currentUser();

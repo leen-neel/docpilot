@@ -17,13 +17,18 @@ function Page() {
   const [formData, setFormData] = useState({
     address: "",
     country: "",
+    countryCode: "",
     city: "",
     state: "",
     zipcode: "",
   });
 
   const handleCountry = (country: Country) => {
-    setFormData((prev) => ({ ...prev, country: country.alpha2 }));
+    setFormData((prev) => ({
+      ...prev,
+      country: country.alpha3,
+      countryCode: country.alpha2,
+    }));
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +44,8 @@ function Page() {
       },
       body: JSON.stringify({
         ...formData,
-        planType,
+        country: formData.countryCode,
+        plan: planType?.toLowerCase(),
         email: user?.emailAddresses[0].emailAddress,
         name: user?.fullName,
       }),
@@ -151,7 +157,10 @@ function Page() {
                     onChange={handleInputChange}
                     className="bg-background/50 transition-colors focus:bg-background"
                   />
-                  <CountryDropdown onChange={handleCountry} />
+                  <CountryDropdown
+                    onChange={handleCountry}
+                    defaultValue={formData.country}
+                  />
                   <div className="grid grid-cols-2 gap-4">
                     <Input
                       type="text"

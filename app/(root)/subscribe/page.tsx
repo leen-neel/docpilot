@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function PricingCard({
   title,
@@ -69,13 +70,14 @@ function PricingCard({
         </ul>
       </CardContent>
       <CardFooter>
-        <Button
-          className="w-full"
-          variant={isPopular ? "default" : "outline"}
-          onClick={() => router.push(`/checkout?plan=${planType}`)}
-        >
-          {price === "Free" ? "Get Started" : "Subscribe Now"}
-        </Button>
+        <Link href={`/checkout?plan=${planType}`} className="w-full">
+          <Button
+            className="w-full"
+            variant={isPopular ? "default" : "outline"}
+          >
+            {price === "Free" ? "Get Started" : "Subscribe Now"}
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );
@@ -89,10 +91,11 @@ export default function SubscribePage() {
       description: "Start your journey – test the basics",
       planType: "Runway",
       features: [
-        { text: "1 API doc project", included: true },
+        { text: "1 API doc", included: true },
         { text: "Interactive API console", included: true },
         { text: "Mock server (rate-limited)", included: true },
-        { text: "Public docs only", included: true },
+        { text: "API Console (full access)", included: true },
+        { text: "Private docs only", included: true },
         { text: '"Powered by DocPilot" badge', included: true },
         { text: "No login required", included: true },
         { text: "Custom branding", included: false },
@@ -102,12 +105,12 @@ export default function SubscribePage() {
     },
     {
       title: "Takeoff",
-      price: "$19",
+      price: "$29",
       description: "Lift off with full control and advanced features",
       planType: "Takeoff",
       isPopular: true,
       features: [
-        { text: "Up to 3 API doc projects", included: true },
+        { text: "Up to 3 API docs", included: true },
         { text: "API console (full access)", included: true },
         { text: "Mock server (standard limits)", included: true },
         { text: "Auto-generated SDK wrappers", included: true },
@@ -171,6 +174,7 @@ export default function SubscribePage() {
               <p className="text-muted-foreground mb-4">
                 Contact us for enterprise solutions and custom requirements.
               </p>
+
               <Button variant="outline">Contact Sales</Button>
             </CardContent>
           </Card>

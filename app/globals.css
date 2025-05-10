@@ -63,6 +63,8 @@
   --border: oklch(0.92 0.004 286.32);
   --input: oklch(0.92 0.004 286.32);
   --ring: oklch(0.723 0.219 149.579);
+  --gradient-start: oklch(0.723 0.219 149.579);
+  --gradient-end: oklch(0.696 0.17 162.48);
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -97,6 +99,8 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.527 0.154 150.069);
+  --gradient-start: oklch(0.696 0.17 162.48);
+  --gradient-end: oklch(0.527 0.154 150.069);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
   --chart-3: oklch(0.769 0.188 70.08);
@@ -192,23 +196,142 @@ html {
   border-radius: var(--radius);
 }
 
-/* Premium card styling */
-.card {
-  @apply rounded-lg border bg-card text-card-foreground shadow-sm transition-all hover:shadow-md;
+/* Enhanced animations and transitions */
+@keyframes float {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
 }
 
-/* Premium button hover effects */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(var(--primary), 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(var(--primary), 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(var(--primary), 0);
+  }
+}
+
+/* Modern gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(
+    135deg,
+    var(--gradient-start),
+    var(--gradient-end)
+  );
+}
+
+.gradient-border {
+  position: relative;
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    background: linear-gradient(
+      135deg,
+      var(--gradient-start),
+      var(--gradient-end)
+    );
+    border-radius: inherit;
+    z-index: -1;
+  }
+}
+
+/* Enhanced component styling */
+.card {
+  @apply rounded-xl border bg-card text-card-foreground shadow-sm transition-all duration-300;
+  &:hover {
+    @apply shadow-lg transform -translate-y-1;
+  }
+}
+
+/* Enhanced button hover effects */
 button {
   @apply transition-all duration-200 ease-in-out;
+  &:hover {
+    transform: translateY(-1px);
+  }
+  &:active {
+    transform: translateY(0);
+  }
 }
 
-button:hover {
-  transform: translateY(-1px);
-}
-
-/* Premium input styling */
+/* Enhanced input styling */
 input,
 textarea,
 select {
   @apply rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  @apply transition-all duration-200;
+  &:focus {
+    @apply ring-2 ring-primary/20;
+  }
+}
+
+/* Enhanced badge styling */
+.badge {
+  @apply transition-all duration-200;
+  &:hover {
+    @apply transform scale-105;
+  }
+}
+
+/* Enhanced select styling */
+select {
+  @apply transition-all duration-200;
+  &:hover {
+    @apply border-primary/50;
+  }
+}
+
+/* Enhanced tab styling */
+.tabs-trigger {
+  @apply transition-all duration-200;
+  &:hover {
+    @apply bg-accent/50;
+  }
+  &[data-state="active"] {
+    @apply bg-accent text-accent-foreground;
+  }
+}
+
+/* Enhanced sidebar styling */
+.sidebar {
+  @apply transition-all duration-300;
+  &:hover {
+    @apply shadow-lg;
+  }
+}
+
+/* Enhanced alert dialog styling */
+.alert-dialog-content {
+  @apply animate-in zoom-in-95 duration-200;
+}
+
+/* Enhanced sheet styling */
+.sheet-content {
+  @apply animate-in slide-in-from-right duration-200;
+}
+
+/* Enhanced skeleton animation */
+.skeleton {
+  @apply animate-pulse bg-gradient-to-r from-accent/50 via-accent to-accent/50 bg-[length:200%_100%];
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }

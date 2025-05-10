@@ -33,6 +33,7 @@ import { Input } from "@/components/ui/input";
 type NetworkCondition = "stable" | "unstable";
 type ResponseScenario = "success" | "error" | "timeout" | "throttling";
 type Header = { key: string; value: string };
+type PathParam = { name: string; value: string };
 
 const scenarioIcons = {
   success: Zap,
@@ -53,6 +54,7 @@ export default function Page() {
   const [headers, setHeaders] = useState<Header[]>([
     { key: "Content-Type", value: "application/json" },
   ]);
+  const [pathParams, setPathParams] = useState<PathParam[]>([]);
 
   const getEndpoint = (id: string) =>
     doc?.endpoints.find((endpoint) => endpoint.id === id);
@@ -78,6 +80,40 @@ export default function Page() {
     }
   };
 
+  const updatePathParams = (endpointId: string) => {
+    const endpoint = getEndpoint(endpointId);
+    if (!endpoint) return;
+
+    const paramRegex = /{([^}]+)}/g;
+    const matches = endpoint.path.matchAll(paramRegex);
+    const params: PathParam[] = [];
+
+    for (const match of matches) {
+      params.push({ name: match[1], value: "" });
+    }
+
+    setPathParams(params);
+  };
+
+  const updatePathParam = (name: string, value: string) => {
+    setPathParams((params) =>
+      params.map((param) => (param.name === name ? { ...param, value } : param))
+    );
+  };
+
+  const getResolvedPath = (path: string) => {
+    let resolvedPath = path;
+    pathParams.forEach(({ name, value }) => {
+      resolvedPath = resolvedPath.replace(`{${name}}`, value);
+    });
+    return resolvedPath;
+  };
+
+  const handleEndpointChange = (value: string) => {
+    setSelectedEndpoint(value);
+    updatePathParams(value);
+  };
+
   const handleSendRequest = async () => {
     if (!selectedEndpoint) {
       toast.error("Please select an endpoint first");
@@ -86,6 +122,16 @@ export default function Page() {
 
     const endpoint = getEndpoint(selectedEndpoint);
     if (!endpoint) return;
+
+    const missingParams = pathParams.filter((param) => !param.value);
+    if (missingParams.length > 0) {
+      toast.error(
+        `Missing required path parameters: ${missingParams
+          .map((p) => p.name)
+          .join(", ")}`
+      );
+      return;
+    }
 
     setIsLoading(true);
     try {
@@ -103,7 +149,6 @@ export default function Page() {
           break;
       }
 
-      // Convert headers array to object
       const headerObject = headers.reduce((acc, { key, value }) => {
         if (key && value) {
           acc[key] = value;
@@ -111,9 +156,10 @@ export default function Page() {
         return acc;
       }, {} as Record<string, string>);
 
+      const resolvedPath = getResolvedPath(endpoint.path);
       const response = await fetch(
         `/api/mock/${doc?.id}?path=${encodeURIComponent(
-          endpoint.path
+          resolvedPath
         )}&method=${encodeURIComponent(endpoint.method)}`,
         {
           method: "GET",
@@ -137,12 +183,12 @@ export default function Page() {
     if (!endpoint) return;
 
     const baseUrl = window.location.origin;
-    const path = encodeURIComponent(endpoint.path);
+    const resolvedPath = getResolvedPath(endpoint.path);
+    const path = encodeURIComponent(resolvedPath);
     const method = encodeURIComponent(endpoint.method);
     const network = encodeURIComponent(networkCondition);
     const scenario = encodeURIComponent(responseScenario);
 
-    // Generate header arguments for CURL
     const headerArgs = headers
       .filter(({ key, value }) => key && value)
       .map(({ key, value }) => `-H "${key}: ${value}"`)
@@ -182,7 +228,7 @@ export default function Page() {
                 <div className="flex-1">
                   <Select
                     value={selectedEndpoint}
-                    onValueChange={setSelectedEndpoint}
+                    onValueChange={handleEndpointChange}
                   >
                     <SelectTrigger className="w-full h-10 min-h-0">
                       <SelectValue placeholder="Choose an endpoint" />
@@ -225,6 +271,31 @@ export default function Page() {
                 </Button>
               </div>
             </div>
+
+            {selectedEndpoint && pathParams.length > 0 && (
+              <div className="space-y-4">
+                <p className="text-sm font-medium text-muted-foreground">
+                  Path Parameters
+                </p>
+                <div className="space-y-2">
+                  {pathParams.map((param) => (
+                    <div key={param.name} className="flex items-center gap-2">
+                      <div className="w-32 text-sm font-mono text-muted-foreground">
+                        {param.name}
+                      </div>
+                      <Input
+                        placeholder={`Enter ${param.name}`}
+                        value={param.value}
+                        onChange={(e) =>
+                          updatePathParam(param.name, e.target.value)
+                        }
+                        className="h-8"
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {selectedEndpoint && (
               <div className="grid grid-cols-2 gap-6">

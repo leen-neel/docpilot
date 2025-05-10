@@ -9,10 +9,15 @@ interface ISubscription {
   city: string;
   state: string;
   zipcode: string;
-
   name: string;
   email: string;
+  plan: "takeoff" | "cruise";
 }
+
+const products = {
+  takeoff: "pdt_HA0kgAFGBgeoDThQD1au1",
+  cruise: "pdt_gzU3M1DU5Ym5ZcHC6SCYI",
+};
 
 export async function POST(req: NextRequest) {
   const body: ISubscription = await req.json();
@@ -21,8 +26,6 @@ export async function POST(req: NextRequest) {
   if (!userId) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
-
-  console.log(body);
 
   const subscription = await dodoClient.subscriptions.create({
     billing: {
@@ -40,7 +43,7 @@ export async function POST(req: NextRequest) {
       name: body.name,
       create_new_customer: true,
     },
-    product_id: "pdt_HA0kgAFGBgeoDThQD1au1",
+    product_id: products[body.plan],
     payment_link: true,
     return_url: "http://localhost:3000/",
     quantity: 1,
